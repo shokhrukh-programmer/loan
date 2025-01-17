@@ -60,6 +60,11 @@
       <artifactId>hibernate-validator</artifactId>
       <version>7.0.5.Final</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.36</version>
+    </dependency>
 
     <!-- EL (Expression Language) for Hibernate Validator -->
     <dependency>

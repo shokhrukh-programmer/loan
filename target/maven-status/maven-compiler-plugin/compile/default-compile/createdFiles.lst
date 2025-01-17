@@ -19,6 +19,7 @@ uz/learn/it/dto/request/AccountCreationRequestDTO.class
 uz/learn/it/dto/response/AccountCreationResponseDTO.class
 uz/learn/it/dto/response/APIResponseDTO.class
 uz/learn/it/dto/UserCredentials.class
+uz/learn/it/dto/DailyLoanPaymentDebt.class
 uz/learn/it/controller/LoanController.class
 uz/learn/it/service/ClientService.class
 uz/learn/it/dto/Client.class
@@ -34,6 +35,5 @@ uz/learn/it/service/UserService.class
 uz/learn/it/controller/ClientController.class
 uz/learn/it/dto/Loan.class
 uz/learn/it/dto/Account.class
-uz/learn/it/dto/DailyLoanPaymentTable.class
 uz/learn/it/service/impl/LoanServiceImpl.class
 uz/learn/it/exception/BalanceNotValidException.class

@@ -8,10 +8,12 @@ import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.exception.BalanceNotValidException;
 import uz.learn.it.exception.NotFoundException;
+import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.Storage;
 import uz.learn.it.service.AccountService;
 import uz.learn.it.service.LoanService;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,11 +35,10 @@ public class LoanServiceImpl implements LoanService {
     public String createLoan(LoanCreationRequestDTO loanRequest) {
         checkClientExistence(loanRequest);
 
-        Loan loan = new Loan(loanId++, new Date(), loanRequest.getLoanAmount(), loanRequest.getLoanTenure(),
-                loanRequest.getInterestRate(), loanRequest.getLoanAmount(), loanRequest.getClientId());
+        Loan loan = new Loan(loanId++, DateFormatter.dateFormatter(new Date()), loanRequest.getLoanAmount(), loanRequest.getLoanTerm(),
+                loanRequest.getInterestRate(), loanRequest.getLoanAmount(), 0.0, loanRequest.getClientId());
 
         storage.addLoan(loan);
-        calculateAndWriteInterest();
 
         return "Loan was successfully given!";
     }
@@ -60,10 +61,12 @@ public class LoanServiceImpl implements LoanService {
         doTransactionFromBalance(loanDetails, account);
 
         if(loanDetails.getPaymentType().equals("INTEREST")) {
-            double daily = loan.getBalance() / 100.0 * loan.getInterestRate() / 365;
+            double debt = loan.getDebt();
 
-            if(daily < loanDetails.getPaymentAmount()) {
-                loan.setBalance(loan.getBalance() - (loanDetails.getPaymentAmount() - daily));
+            if(debt > loanDetails.getPaymentAmount()) {
+                loan.setDebt(debt - loanDetails.getPaymentAmount());
+            } else {
+                loan.setBalance(loan.getBalance() - (loanDetails.getPaymentAmount() - debt));
             }
         } else {
             loan.setBalance(loan.getBalance() - loanDetails.getPaymentAmount());
@@ -75,20 +78,21 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public void calculateAndWriteInterest() {
         List<Loan> loanList = storage.getLoans();
-        DailyLoanPaymentTable dailyLoanPaymentTable;
-        double dailyInterest = 0;
+        DailyLoanPaymentDebt dailyLoanPaymentDebt;
+        double dailyInterest;
 
         for(Loan l : loanList) {
             dailyInterest = l.getBalance() / 100.0 * l.getInterestRate() / 365;
-            dailyLoanPaymentTable = new DailyLoanPaymentTable(historyId++, new Date(), dailyInterest, l.getId());
+            l.setDebt(l.getDebt() + dailyInterest);
+            dailyLoanPaymentDebt = new DailyLoanPaymentDebt(historyId++, DateFormatter.dateFormatter(new Date()), dailyInterest, l.getId());
 
-            storage.addToPaymentTable(dailyLoanPaymentTable);
+            storage.addToPaymentTable(dailyLoanPaymentDebt);
         }
     }
 
     @Override
-    public List<DailyLoanPaymentTable> getDailyPayments(int loanId) {
-        return storage.getLoanPaymentTableList().stream().filter(loan -> loan.getLoanId() == loanId).collect(Collectors.toList());
+    public List<DailyLoanPaymentDebt> getDailyPayments(int loanId) {
+        return storage.getDailyLoanPaymentDebtList().stream().filter(loan -> loan.getLoanId() == loanId).collect(Collectors.toList());
     }
 
     private void checkClientExistence(LoanCreationRequestDTO loanRequest) {

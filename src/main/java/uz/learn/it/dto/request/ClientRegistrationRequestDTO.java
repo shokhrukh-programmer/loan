@@ -1,7 +1,9 @@
 package uz.learn.it.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
+@Data
 public class ClientRegistrationRequestDTO {
     @NotNull(message = "First name can not be null")
     @NotBlank(message = "First name can not be blank")
@@ -19,44 +21,4 @@ public class ClientRegistrationRequestDTO {
     private String phoneNumber;
     @Pattern(regexp = "^CLIENT|MANAGER$", message = "Roles' list: MANAGER, CLIENT")
     private String role;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPassportInfo() {
-        return passportInfo;
-    }
-
-    public void setPassportInfo(String passportInfo) {
-        this.passportInfo = passportInfo;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

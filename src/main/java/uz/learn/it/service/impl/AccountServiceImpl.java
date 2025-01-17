@@ -12,6 +12,7 @@ import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.exception.BalanceNotValidException;
 import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.helper.AccountNumberGenerator;
+import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.Storage;
 import uz.learn.it.service.AccountService;
 
@@ -64,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
         StringBuilder operation = getOperationByType(accountTransactionRequestDTO, account);
 
         TransactionHistory transactionHistory = new TransactionHistory(
-                historyId++, new Date(), account.getAccountNumber(),
+                historyId++, DateFormatter.dateFormatter(new Date()), account.getAccountNumber(),
                 operation.append(accountTransactionRequestDTO.getAmountToTopUpAndWithdraw()).toString(),
                 account.getBalance(),
                 account.getClientId());

@@ -1,6 +1,5 @@
 package uz.learn.it;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.WebApplicationInitializer;
@@ -12,7 +11,7 @@ import uz.learn.it.config.LoanManagementConfig;
 @EnableScheduling
 public class MyWebApplicationInitializer implements WebApplicationInitializer {
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(ServletContext servletContext) {
         //Load Spring web application configuration
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.register(LoanManagementConfig.class);

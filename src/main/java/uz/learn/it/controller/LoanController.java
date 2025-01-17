@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import uz.learn.it.dto.DailyLoanPaymentTable;
+import uz.learn.it.dto.DailyLoanPaymentDebt;
 import uz.learn.it.dto.Loan;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
@@ -36,8 +36,8 @@ public class LoanController {
     }
 
     @GetMapping(value = "/payments/{loanId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentTable>>> getDailyInterest(@PathVariable("loanId") int loanId) {
-        APIResponseDTO<List<DailyLoanPaymentTable>> apiResponseDTO = new APIResponseDTO<>();
+    public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentDebt>>> getDailyInterest(@PathVariable("loanId") int loanId) {
+        APIResponseDTO<List<DailyLoanPaymentDebt>> apiResponseDTO = new APIResponseDTO<>();
         apiResponseDTO.setData(loanService.getDailyPayments(loanId));
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);

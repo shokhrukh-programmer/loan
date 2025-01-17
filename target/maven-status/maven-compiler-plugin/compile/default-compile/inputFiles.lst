@@ -19,7 +19,6 @@
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/request/LoanPaymentRequestDTO.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/config/LoanManagementConfig.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/exception/GlobalExceptionHandler.java
-/Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/DailyLoanPaymentTable.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/service/impl/AccountServiceImpl.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/response/ClientRegistrationResponseDTO.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/controller/UserController.java
@@ -29,6 +28,7 @@
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/request/ClientRegistrationRequestDTO.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/Account.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/service/ClientService.java
+/Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/DailyLoanPaymentDebt.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/request/AccountCreationRequestDTO.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/helper/PasswordGenerator.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/service/AccountService.java
