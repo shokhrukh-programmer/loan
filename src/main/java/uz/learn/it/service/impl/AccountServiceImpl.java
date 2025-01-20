@@ -92,7 +92,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Client getClientById(int id) {
-        return storage.getClients().stream().filter(client -> client.getId() == id).findFirst()
+        return storage.getClients()
+                .stream()
+                .filter(client -> client.getId() == id).findFirst()
                 .orElseThrow(() -> new NotFoundException("There is no client with this id!"));
     }
 

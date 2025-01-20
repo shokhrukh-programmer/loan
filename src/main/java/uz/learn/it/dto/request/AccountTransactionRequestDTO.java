@@ -8,6 +8,7 @@ import lombok.Data;
 public class AccountTransactionRequestDTO {
     @Pattern(regexp = "^(top-up|withdraw)$", message = "Type should be top-up or withdraw!")
     private String type;
+
     @NotNull(message = "Amount should be given!!")
     private Double amountToTopUpAndWithdraw;
 }

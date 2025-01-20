@@ -91,7 +91,8 @@ public class ClientServiceImpl implements ClientService {
     private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
         Client c = storage.getClients().stream().filter(client -> client.getPassportInfo().
                 equals(clientRegistrationRequestDTO.getPassportInfo()) ||
-                client.getPhoneNumber().equals(clientRegistrationRequestDTO.getPhoneNumber())).findFirst().orElse(null);
+                client.getPhoneNumber().equals(clientRegistrationRequestDTO.getPhoneNumber()))
+                .findFirst().orElse(null);
 
         if(c != null) {
             throw new AlreadyExistException("This client has already registered!");
