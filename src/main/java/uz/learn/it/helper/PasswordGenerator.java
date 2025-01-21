@@ -1,14 +1,17 @@
 package uz.learn.it.helper;
 
+import uz.learn.it.constant.Constants;
+
+import javax.swing.*;
 import java.security.SecureRandom;
 
 public class PasswordGenerator {
     public static String generatePassword() {
-        String upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lowerCase = "abcdefghijklmnopqrstuvwxyz";
-        String digits = "0123456789";
-        String specialChars = "!@#$%^&*()-_+=<>?";
-        String allChars = upperCase + lowerCase + digits + specialChars;
+        String allChars =
+                Constants.UPPER_CASE +
+                Constants.LOWER_CASE +
+                Constants.DIGITS +
+                Constants.SPECIAL_CHARS;
 
         // Use SecureRandom for strong randomness
         SecureRandom random = new SecureRandom();
@@ -17,10 +20,10 @@ public class PasswordGenerator {
         StringBuilder password = new StringBuilder(10);
 
         // Ensure at least one character from each group
-        password.append(upperCase.charAt(random.nextInt(upperCase.length())));
-        password.append(lowerCase.charAt(random.nextInt(lowerCase.length())));
-        password.append(digits.charAt(random.nextInt(digits.length())));
-        password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+        password.append(Constants.UPPER_CASE.charAt(random.nextInt(Constants.UPPER_CASE.length())));
+        password.append(Constants.LOWER_CASE.charAt(random.nextInt(Constants.LOWER_CASE.length())));
+        password.append(Constants.DIGITS.charAt(random.nextInt(Constants.DIGITS.length())));
+        password.append(Constants.SPECIAL_CHARS.charAt(random.nextInt(Constants.SPECIAL_CHARS.length())));
 
         // Fill the remaining characters from the entire pool
         for (int i = 4; i < 10; i++) {

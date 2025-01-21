@@ -10,9 +10,8 @@ import java.util.List;
 
 public interface AccountService {
     AccountCreationResponseDTO createAccount(AccountCreationRequestDTO accountCreationRequestDTO);
-    List<Account> getAccountsByClientId(int id);
-    String doTransaction(int id, AccountTransactionRequestDTO accountTransactionRequestDTO);
-    List<TransactionHistory> getOperationHistory();
+    List<Account> getAccountsByClientId(Long id);
+
     List<Account> getAccounts();
-    Account getAccountById(int id);
+
 }

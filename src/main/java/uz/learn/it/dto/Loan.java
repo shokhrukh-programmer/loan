@@ -6,12 +6,19 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Loan {
-    private int id;
+    private long id;
+
     private String createdDate;
-    private int amount;
+
+    private double amount;
+
     private int term;
+
     private double interestRate;
+
     private double balance;
+
     private double debt;
-    private int clientId;
+
+    private long clientId;
 }

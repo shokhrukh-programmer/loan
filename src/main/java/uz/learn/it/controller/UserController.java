@@ -28,6 +28,7 @@ public class UserController {
     @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<UserCredentials>>> getUserDetails() {
         APIResponseDTO<List<UserCredentials>> apiResponseDTO = new APIResponseDTO<>();
+
         apiResponseDTO.setData(
                 userService.getUserCredentials()
         );

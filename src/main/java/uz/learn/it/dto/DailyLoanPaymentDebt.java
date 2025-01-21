@@ -6,8 +6,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DailyLoanPaymentDebt {
-    private int id;
+    private long id;
+
     private String date;
+
     private double dailyInterestAmount;
-    private int loanId;
+
+    private long loanId;
 }

@@ -23,6 +23,7 @@ uz/learn/it/dto/DailyLoanPaymentDebt.class
 uz/learn/it/controller/LoanController.class
 uz/learn/it/service/ClientService.class
 uz/learn/it/dto/Client.class
+uz/learn/it/helper/DateFormatter.class
 uz/learn/it/config/LoanManagementConfig.class
 uz/learn/it/scheduler/ScheduledTask.class
 uz/learn/it/dto/request/LoanCreationRequestDTO.class

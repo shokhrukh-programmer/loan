@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountCreationResponseDTO {
     private String clientFirstName;
+
     private String clientLastName;
+
     private String accountType;
+
     private String accountNumber;
 }

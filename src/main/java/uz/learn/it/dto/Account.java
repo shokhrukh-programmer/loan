@@ -8,9 +8,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
-    private int id;
+    private long id;
+
     private String accountType;
+
     private String accountNumber;
+
     private double balance;
-    private int clientId;
+
+    private long clientId;
 }

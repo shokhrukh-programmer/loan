@@ -8,10 +8,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Client {
-    private int id;
+    private long id;
+
     private String firstName;
+
     private String lastName;
+
     private String passportInfo;
+
     private String phoneNumber;
+
     private String role;
 }

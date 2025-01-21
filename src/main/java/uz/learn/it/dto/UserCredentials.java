@@ -6,8 +6,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserCredentials {
-    private int id;
+    private long id;
+
     private String username;
+
     private String password;
-    private int clientId;
+
+    private long clientId;
 }

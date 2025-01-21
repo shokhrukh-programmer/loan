@@ -6,8 +6,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Payment {
-    private int id;
-    private int loanId;
+    private long id;
+
+    private long loanId;
+
     private String paymentType;
+
     private double paymentAmount;
 }

@@ -18,19 +18,21 @@ import uz.learn.it.service.AccountService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-@Validated
+@RequestMapping("/api/accounts")
 public class AccountController {
     private final AccountService accountService;
+
+    private static final String ACCOUNT_OPENED_SUCCESSFULLY_MESSAGE = "Account has successfully opened!";
 
     @Autowired
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
-    @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<Account>>> getAccounts() {
         APIResponseDTO<List<Account>> apiResponseDTO = new APIResponseDTO<>();
+
         apiResponseDTO.setData(
                 accountService.getAccounts()
         );
@@ -38,38 +40,24 @@ public class AccountController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/accounts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<Account>>>
-    getAccountById(@PathVariable("id") int id) {
+    @GetMapping(value = "/{accountId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIResponseDTO<List<Account>>> getAccountById(
+            @PathVariable("accountId") Long accountId) {
         APIResponseDTO<List<Account>> apiResponseDTO = new APIResponseDTO<>();
-        apiResponseDTO.setData(accountService.getAccountsByClientId(id));
+
+        apiResponseDTO.setData(accountService.getAccountsByClientId(accountId));
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/histories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<TransactionHistory>>> getOperationHistory() {
-        APIResponseDTO<List<TransactionHistory>> apiResponseDTO = new APIResponseDTO<>();
-        apiResponseDTO.setData(accountService.getOperationHistory());
-
-        return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/accounts", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<AccountCreationResponseDTO>> createAccount(
             @Valid @RequestBody AccountCreationRequestDTO accountCreationRequestDTO) {
         APIResponseDTO<AccountCreationResponseDTO> apiResponseDTO = new APIResponseDTO<>();
-        apiResponseDTO.setMessage("Account has successfully opened!");
+
+        apiResponseDTO.setMessage(ACCOUNT_OPENED_SUCCESSFULLY_MESSAGE);
+
         apiResponseDTO.setData(accountService.createAccount(accountCreationRequestDTO));
-
-        return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/accounts/{accountId}/transaction", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<String>> doTransaction(
-            @PathVariable("accountId") int id, @Valid @RequestBody AccountTransactionRequestDTO accountTransactionRequestDTO) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
-        apiResponseDTO.setMessage(accountService.doTransaction(id, accountTransactionRequestDTO));
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }

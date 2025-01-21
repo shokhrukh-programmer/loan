@@ -6,10 +6,15 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class TransactionHistory {
-    private int id;
+    private long id;
+
     private String date;
+
     private String accountNumber;
+
     private String operation;
+
     private double remainingBalance;
-    private int clientId;
+
+    private long clientId;
 }

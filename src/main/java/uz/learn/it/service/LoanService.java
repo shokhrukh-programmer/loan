@@ -10,7 +10,8 @@ import java.util.List;
 public interface LoanService {
     List<Loan> getLoans();
     String createLoan(LoanCreationRequestDTO loan);
-    String payForLoan(LoanPaymentRequestDTO loanDetails);
+
     void calculateAndWriteInterest();
     List<DailyLoanPaymentDebt> getDailyPayments(int loanId);
+    String payForLoan(int loanId, LoanPaymentRequestDTO loanDetails);
 }

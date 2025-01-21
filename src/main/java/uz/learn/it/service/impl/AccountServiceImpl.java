@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 public class AccountServiceImpl implements AccountService {
     private static int accountId = 1;
-    private static int historyId = 1;
     private final Storage storage;
 
     @Autowired
@@ -34,10 +33,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountCreationResponseDTO createAccount(AccountCreationRequestDTO accountCreationRequestDTO) {
         String accountType = accountCreationRequestDTO.getAccountType();
-        int id = accountCreationRequestDTO.getClientId();
-        Client client = getClientById(id);
+        Long clientId = accountCreationRequestDTO.getClientId();
+        Client client = getClientById(clientId);
 
-        checkForAccountAlreadyExistence(id, accountType);
+        checkForAccountAlreadyExistence(clientId, accountType);
 
         Account account = new Account(accountId++, accountType, accountType.equals("ACCOUNT") ?
                 AccountNumberGenerator.generateAccountNumber() : AccountNumberGenerator.generateDepositNumber(), 0.0, accountCreationRequestDTO.getClientId());
@@ -50,34 +49,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAccountsByClientId(int id) {
+    public List<Account> getAccountsByClientId(Long clientId) {
         List<Account> accounts = storage.getAccounts();
 
         return accounts.stream()
-                .filter(account -> account.getClientId() == id)
+                .filter(account -> account.getClientId() == clientId)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public String doTransaction(int id, AccountTransactionRequestDTO accountTransactionRequestDTO) {
-        Account account = getAccountById(id);
-
-        StringBuilder operation = getOperationByType(accountTransactionRequestDTO, account);
-
-        TransactionHistory transactionHistory = new TransactionHistory(
-                historyId++, DateFormatter.dateFormatter(new Date()), account.getAccountNumber(),
-                operation.append(accountTransactionRequestDTO.getAmountToTopUpAndWithdraw()).toString(),
-                account.getBalance(),
-                account.getClientId());
-
-        storage.addOperationToHistory(transactionHistory);
-
-        return "Operation has successfully done!";
-    }
-
-    @Override
-    public List<TransactionHistory> getOperationHistory() {
-        return storage.getOperationHistories();
     }
 
     @Override
@@ -85,47 +62,21 @@ public class AccountServiceImpl implements AccountService {
         return storage.getAccounts();
     }
 
-    @Override
-    public Account getAccountById(int id) {
-        return storage.getAccounts().stream().filter(accountId -> accountId.getId() == id)
-                .findFirst().orElseThrow(() -> new NotFoundException("There is no account with this id!"));
-    }
-
-    private Client getClientById(int id) {
+    private Client getClientById(Long clientId) {
         return storage.getClients()
                 .stream()
-                .filter(client -> client.getId() == id).findFirst()
+                .filter(client -> client.getId() == clientId).findFirst()
                 .orElseThrow(() -> new NotFoundException("There is no client with this id!"));
     }
 
-    private void checkForAccountAlreadyExistence(int id, String accountType) {
-        List<Account> accounts = getAccountsByClientId(id);
+    private void checkForAccountAlreadyExistence(Long clientId, String accountType) {
+        List<Account> accounts = getAccountsByClientId(clientId);
 
         for(Account a : accounts) {
             if(a.getAccountType().equals(accountType)) {
                 throw new AlreadyExistException("This client has already opened "
                         + accountType);
             }
-        }
-    }
-
-    private static StringBuilder getOperationByType(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
-        StringBuilder operation = new StringBuilder();
-
-        if(accountTransactionRequestDTO.getType().equals("top-up")) {
-            account.setBalance(account.getBalance() + accountTransactionRequestDTO.getAmountToTopUpAndWithdraw());
-            operation.append("+ ");
-        } else {
-            checkBalanceToWithdraw(accountTransactionRequestDTO, account);
-            account.setBalance(account.getBalance() - accountTransactionRequestDTO.getAmountToTopUpAndWithdraw());
-            operation.append("- ");
-        }
-        return operation;
-    }
-
-    private static void checkBalanceToWithdraw(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
-        if(account.getBalance() - accountTransactionRequestDTO.getAmountToTopUpAndWithdraw() < 0) {
-            throw new BalanceNotValidException("Balance is not enough to withdraw!");
         }
     }
 }
