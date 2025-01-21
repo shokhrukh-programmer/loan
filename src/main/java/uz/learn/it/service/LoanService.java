@@ -9,9 +9,12 @@ import java.util.List;
 
 public interface LoanService {
     List<Loan> getLoans();
-    String createLoan(LoanCreationRequestDTO loan);
+
+    void createLoan(LoanCreationRequestDTO loan);
 
     void calculateAndWriteInterest();
-    List<DailyLoanPaymentDebt> getDailyPayments(int loanId);
-    String payForLoan(int loanId, LoanPaymentRequestDTO loanDetails);
+
+    List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId);
+
+    void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails);
 }

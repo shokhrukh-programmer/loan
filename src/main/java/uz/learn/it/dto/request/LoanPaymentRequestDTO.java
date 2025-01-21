@@ -14,8 +14,7 @@ public class LoanPaymentRequestDTO {
     @Pattern(regexp = "^INTEREST|MAIN$", message = "Payment type should be INTEREST or MAIN")
     private String paymentType;
 
-    @NotNull(message = "Amount can not be null!")
-    private Double paymentAmount;
+    private double paymentAmount;
 
     @NotNull(message = "Account number can not be null")
     @NotBlank(message = "Account number can not be blank")

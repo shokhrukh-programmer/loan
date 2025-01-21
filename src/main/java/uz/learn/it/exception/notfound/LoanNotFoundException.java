@@ -1,8 +1,11 @@
-package uz.learn.it.exception;
+package uz.learn.it.exception.notfound;
+
+import uz.learn.it.constant.Constants;
+import uz.learn.it.exception.NotFoundException;
 
 public class LoanNotFoundException extends NotFoundException {
     public LoanNotFoundException() {
-        super();
+        super(Constants.LOAN_NOT_FOUND_MESSAGE);
     }
 
     public LoanNotFoundException(String message) {

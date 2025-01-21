@@ -2,7 +2,6 @@ package uz.learn.it.helper;
 
 import uz.learn.it.constant.Constants;
 
-import javax.swing.*;
 import java.security.SecureRandom;
 
 public class PasswordGenerator {

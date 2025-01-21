@@ -6,16 +6,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.learn.it.constant.Constants;
 import uz.learn.it.dto.TransactionHistory;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
-import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.service.TransactionService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -33,14 +33,15 @@ public class TransactionController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-
     @PostMapping(value = "/{accountId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
             @PathVariable("accountId") int id,
             @Valid @RequestBody AccountTransactionRequestDTO accountTransactionRequestDTO) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
 
-        apiResponseDTO.setMessage(transactionService.doTransaction(id, accountTransactionRequestDTO));
+        apiResponseDTO.setMessage(Constants.TRANSACTION_DONE_SUCCESSFULLY_MESSAGE);
+
+        transactionService.makeTransaction(id, accountTransactionRequestDTO);
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }

@@ -2,130 +2,132 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uz.learn.it.constant.Constants;
 import uz.learn.it.dto.*;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
-import uz.learn.it.exception.BalanceNotValidException;
-import uz.learn.it.exception.NotFoundException;
+import uz.learn.it.exception.notfound.ClientNotFoundException;
+import uz.learn.it.exception.notfound.LoanNotFoundException;
+import uz.learn.it.exception.ValidationException;
 import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.Storage;
-import uz.learn.it.service.AccountService;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LoanServiceImpl implements LoanService {
-    private static int loanId = 1;
-    private final Storage storage;
-    private final AccountService accountService;
-    private static int historyId = 1;
     private final TransactionService transactionService;
 
     @Autowired
-    public LoanServiceImpl(Storage storage, AccountService accountService, TransactionService transactionService) {
-        this.storage = storage;
-        this.accountService = accountService;
+    public LoanServiceImpl(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
     @Override
-    public String createLoan(LoanCreationRequestDTO loanRequest) {
+    public void createLoan(LoanCreationRequestDTO loanRequest) {
         checkClientExistence(loanRequest);
 
-        Loan loan = new Loan(loanId++, DateFormatter.dateFormatter(new Date()), loanRequest.getLoanAmount(), loanRequest.getLoanTerm(),
-                loanRequest.getInterestRate(), loanRequest.getLoanAmount(), 0.0, loanRequest.getClientId());
+        Loan loan = Loan.builder()
+                .createdDate(DateFormatter.dateFormatter(new Date()))
+                .amount(loanRequest.getLoanAmount())
+                .term(loanRequest.getLoanTerm())
+                .interestRate(loanRequest.getInterestRate())
+                .balance(loanRequest.getLoanAmount())
+                .clientId(loanRequest.getClientId())
+                .build();
 
-        storage.addLoan(loan);
-
-        return "Loan was successfully given!";
+        Storage.addLoan(loan);
     }
 
     @Override
     public List<Loan> getLoans() {
-        return storage.getLoans();
+        return Storage.loans;
     }
 
     @Override
     public void calculateAndWriteInterest() {
-        List<Loan> loanList = storage.getLoans();
-        DailyLoanPaymentDebt dailyLoanPaymentDebt;
+        List<Loan> loanList = Storage.loans;
+
         double dailyInterest;
 
         for(Loan l : loanList) {
             dailyInterest = l.getBalance() / 100.0 * l.getInterestRate() / 365;
-            l.setDebt(l.getDebt() + dailyInterest);
-            dailyLoanPaymentDebt = new DailyLoanPaymentDebt(historyId++, DateFormatter.dateFormatter(new Date()), dailyInterest, l.getId());
 
-            storage.addToPaymentTable(dailyLoanPaymentDebt);
+            l.setDebt(l.getDebt() + dailyInterest);
+
+            DailyLoanPaymentDebt dailyLoanPaymentDebt = DailyLoanPaymentDebt.builder()
+                    .date(DateFormatter.dateFormatter(new Date()))
+                    .dailyInterestAmount(dailyInterest)
+                    .loanId(l.getId())
+                    .build();
+
+            Storage.addToPaymentTable(dailyLoanPaymentDebt);
         }
     }
 
     @Override
-    public List<DailyLoanPaymentDebt> getDailyPayments(int loanId) {
-        return storage.getDailyLoanPaymentDebtList().stream().filter(loan -> loan.getLoanId() == loanId).collect(Collectors.toList());
+    public List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId) {
+        return Storage.getDailyPaymentsById(loanId);
     }
 
     private void checkClientExistence(LoanCreationRequestDTO loanRequest) {
-        storage.getClients().stream().filter(
-                        c -> c.getId() == loanRequest.getClientId())
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("There is no client with this id!"));
+        Storage.findClientById(loanRequest.getClientId())
+                .orElseThrow(ClientNotFoundException::new);
     }
 
     @Override
-    public String payForLoan(int loanId, LoanPaymentRequestDTO loanDetails) {
-        Loan loan = getLoanById(loanDetails);
+    public void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails) {
+        Loan loan = getLoanById(loanId);
 
         Account account = getAccountById(loanDetails);
 
         if(loanDetails.getPaymentAmount() > account.getBalance()) {
-            throw new BalanceNotValidException("You have no enough money to pay loan!");
+            throw new ValidationException(Constants.BALANCE_NOT_VALID_MESSAGE);
         }
 
         doTransactionFromBalance(loanDetails, account);
 
-        if(loanDetails.getPaymentType().equals("INTEREST")) {
+        payForLoan(loanDetails, loan);
+    }
+
+    private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
+        if(loanDetails.getPaymentType().equals(PaymentType.INTEREST.name())) {
             double debt = loan.getDebt();
 
             if(debt > loanDetails.getPaymentAmount()) {
                 loan.setDebt(debt - loanDetails.getPaymentAmount());
             } else {
+                loan.setDebt(0.0);
                 loan.setBalance(loan.getBalance() - (loanDetails.getPaymentAmount() - debt));
             }
         } else {
             loan.setBalance(loan.getBalance() - loanDetails.getPaymentAmount());
         }
-
-        return "Payment was successfully done!";
     }
 
-
-
-    private Loan getLoanById(LoanPaymentRequestDTO loanDetails) {
-        return storage.getLoans().stream().filter(l -> l.getId() == loanDetails.getLoanId())
-                .findFirst().orElseThrow(() -> new NotFoundException("There is no loan with this loan id!"));
+    private Loan getLoanById(long loanId) {
+        return Storage.findLoanById(loanId)
+                .orElseThrow(LoanNotFoundException::new);
     }
 
     private Account getAccountById(LoanPaymentRequestDTO loanDetails) {
-        return storage.getAccounts().stream().filter(a -> a.getAccountNumber()
-                        .equals(loanDetails.getAccountNumber())).findFirst()
-                .orElseThrow(() -> new NotFoundException("There is no account with this account number!"));
+        return Storage.accounts.stream().filter(a -> a.getAccountNumber()
+                        .equals(loanDetails.getAccountNumber()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException(Constants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
     }
-
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {
-        AccountTransactionRequestDTO a = new AccountTransactionRequestDTO();
-        a.setType("withdraw");
-        a.setAmountToTopUpAndWithdraw(loanDetails.getPaymentAmount());
-        transactionService.doTransaction(account.getId(), a);
+        AccountTransactionRequestDTO accountTransactionRequestDTO = new AccountTransactionRequestDTO();
+
+        accountTransactionRequestDTO.setType(PaymentType.WITHDRAW.name());
+
+        accountTransactionRequestDTO.setAmountToTopUpAndWithdraw(loanDetails.getPaymentAmount());
+
+        transactionService.makeTransaction(account.getId(), accountTransactionRequestDTO);
     }
-
-
-
 }

@@ -8,8 +8,11 @@ import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import java.util.List;
 
 public interface ClientService {
-    Client getClientById(int id);
+    Client getClientById(long clientId);
+
     List<Client> getClients();
+
     ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO client);
-    String updateClientById(int id, ClientModificationRequestDTO client);
+
+    void updateClientById(long clientId, ClientModificationRequestDTO client);
 }

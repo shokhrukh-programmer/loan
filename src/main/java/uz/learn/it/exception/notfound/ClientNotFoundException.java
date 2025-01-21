@@ -1,6 +1,7 @@
-package uz.learn.it.exception;
+package uz.learn.it.exception.notfound;
 
 import uz.learn.it.constant.Constants;
+import uz.learn.it.exception.NotFoundException;
 
 public class ClientNotFoundException extends NotFoundException {
     public ClientNotFoundException() {
