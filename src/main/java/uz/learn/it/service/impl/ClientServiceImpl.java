@@ -1,22 +1,33 @@
 package uz.learn.it.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Client;
-import uz.learn.it.dto.UserCredentials;
+import uz.learn.it.entity.Client;
+import uz.learn.it.entity.UserCredential;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.helper.PasswordGenerator;
-import uz.learn.it.repository.Storage;
+import uz.learn.it.repository.ClientDAO;
+import uz.learn.it.repository.UserDAO;
 import uz.learn.it.service.ClientService;
 
 import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
+    private final ClientDAO clientDAO;
+    private final UserDAO userDAO;
+
+    @Autowired
+    public ClientServiceImpl(ClientDAO clientDAO, UserDAO userDAO) {
+        this.clientDAO = clientDAO;
+        this.userDAO = userDAO;
+    }
+
     @Override
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
         checkForClientExistence(tempClient);
@@ -29,14 +40,14 @@ public class ClientServiceImpl implements ClientService {
                 .role(tempClient.getRole())
                 .build();
 
-        Storage.addClient(client);
+        clientDAO.saveClient(client);
 
         return saveUsernameAndPassword(client.getPhoneNumber(), client.getId());
     }
 
     @Override
-    public void updateClientById(long id, ClientModificationRequestDTO tempClient) {
-        Client client = getClientById(id);
+    public void updateClientById(long clientId, ClientModificationRequestDTO tempClient) {
+        Client client = clientDAO.findClientByClientId(clientId);
 
         if(isNotNullAndBlank(tempClient.getFirstName())) {
             client.setFirstName(tempClient.getFirstName());
@@ -60,22 +71,28 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private boolean isNotNullAndBlank(String input) {
-        return input != null && !input.isBlank();
+        return input != null && !input.isBlank() && !(input
+                .replaceAll("[\\p{Cf}\\s]+", "").isEmpty());
     }
 
     @Override
     public List<Client> getClients() {
-        return Storage.clients;
+        return clientDAO.getClients();
     }
 
     @Override
     public Client getClientById(long clientId) {
-        return Storage.findClientById(clientId)
-                        .orElseThrow(() -> new NotFoundException(Constants.CLIENT_NOT_FOUND_MESSAGE));
+        Client client = clientDAO.findClientByClientId(clientId);
+
+        if(client == null) {
+            throw new NotFoundException(Constants.CLIENT_NOT_FOUND_MESSAGE);
+        }
+
+        return client;
     }
 
     private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
-        boolean clientExists = Storage.clients.stream()
+        boolean clientExists = clientDAO.getClients().stream()
                 .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
 
         if (clientExists) {
@@ -92,12 +109,12 @@ public class ClientServiceImpl implements ClientService {
     private ClientRegistrationResponseDTO saveUsernameAndPassword(String phoneNumber, Long clientId) {
         String password = PasswordGenerator.generatePassword();
 
-        Storage.addUserLoginDetails(
-                UserCredentials.builder()
-                        .username(phoneNumber)
-                        .password(password)
-                        .clientId(clientId)
-                        .build()
+        userDAO.saveUserCredentials(
+                UserCredential.builder()
+                .username(phoneNumber)
+                .password(password)
+                .clientId(clientId)
+                .build()
         );
 
         return new ClientRegistrationResponseDTO(phoneNumber, password);

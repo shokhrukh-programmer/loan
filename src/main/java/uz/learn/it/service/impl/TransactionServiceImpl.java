@@ -1,15 +1,18 @@
 package uz.learn.it.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Account;
+import uz.learn.it.entity.Account;
 import uz.learn.it.dto.PaymentType;
 import uz.learn.it.dto.TransactionHistory;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.ValidationException;
 import uz.learn.it.helper.DateFormatter;
+import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.repository.Storage;
+import uz.learn.it.repository.TransactionDAO;
 import uz.learn.it.service.TransactionService;
 
 import java.util.Date;
@@ -17,6 +20,15 @@ import java.util.List;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+    private final TransactionDAO transactionDAO;
+    private final AccountDAO accountDAO;
+
+    @Autowired
+    public TransactionServiceImpl(TransactionDAO transactionDAO, AccountDAO accountDAO) {
+        this.transactionDAO = transactionDAO;
+        this.accountDAO = accountDAO;
+    }
+
     @Override
     public List<TransactionHistory> getOperationHistory() {
         return Storage.operationHistories;
@@ -36,13 +48,18 @@ public class TransactionServiceImpl implements TransactionService {
                 .clientId(account.getClientId())
                 .build();
 
-        Storage.addOperationToHistory(transactionHistory);
+        transactionDAO.saveOperationToHistory(transactionHistory);
     }
 
     @Override
     public Account getAccountByAccountId(long accountId) {
-        return Storage.findAccountById(accountId)
-                .orElseThrow(AccountNotFoundException::new);
+        Account account = accountDAO.findAccountById(accountId);
+
+        if(account == null) {
+            throw new AccountNotFoundException();
+        }
+
+        return account;
     }
 
     private StringBuilder getOperationByType(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {

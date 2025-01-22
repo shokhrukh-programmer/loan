@@ -1,7 +1,7 @@
 package uz.learn.it.service;
 
-import uz.learn.it.dto.DailyLoanPaymentDebt;
-import uz.learn.it.dto.Loan;
+import uz.learn.it.entity.DailyLoanPaymentDebt;
+import uz.learn.it.entity.Loan;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 
