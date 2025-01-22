@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void makeTransaction(long id, AccountTransactionRequestDTO accountTransactionRequestDTO) {
-        Account account = getAccountById(id);
+        Account account = getAccountByAccountId(id);
 
         StringBuilder operation = getOperationByType(accountTransactionRequestDTO, account);
 
@@ -40,7 +40,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Account getAccountById(long accountId) {
+    public Account getAccountByAccountId(long accountId) {
         return Storage.findAccountById(accountId)
                 .orElseThrow(AccountNotFoundException::new);
     }

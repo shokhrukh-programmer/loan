@@ -1,7 +1,6 @@
 package uz.learn.it.dto.request;
 
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

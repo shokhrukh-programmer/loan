@@ -29,7 +29,6 @@
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/response/ClientRegistrationResponseDTO.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/controller/UserController.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/Client.java
-/Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/Payment.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/repository/Storage.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/dto/request/ClientRegistrationRequestDTO.java
 /Users/shohruh/IdeaProjects/LoanManagement/src/main/java/uz/learn/it/exception/notfound/LoanNotFoundException.java

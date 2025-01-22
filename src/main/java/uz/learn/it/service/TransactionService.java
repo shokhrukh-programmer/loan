@@ -11,6 +11,6 @@ public interface TransactionService {
 
     void makeTransaction(long id, AccountTransactionRequestDTO accountTransactionRequestDTO);
 
-    Account getAccountById(long accountId);
+    Account getAccountByAccountId(long accountId);
 
 }

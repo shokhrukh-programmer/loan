@@ -83,7 +83,7 @@ public class LoanServiceImpl implements LoanService {
     public void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails) {
         Loan loan = getLoanById(loanId);
 
-        Account account = getAccountById(loanDetails);
+        Account account = getAccountByAccountNumber(loanDetails.getAccountNumber());
 
         if(loanDetails.getPaymentAmount() > account.getBalance()) {
             throw new ValidationException(Constants.BALANCE_NOT_VALID_MESSAGE);
@@ -114,11 +114,9 @@ public class LoanServiceImpl implements LoanService {
                 .orElseThrow(LoanNotFoundException::new);
     }
 
-    private Account getAccountById(LoanPaymentRequestDTO loanDetails) {
-        return Storage.accounts.stream().filter(a -> a.getAccountNumber()
-                        .equals(loanDetails.getAccountNumber()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException(Constants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
+    private Account getAccountByAccountNumber(String accountNumber) {
+        return Storage.findAccountByAccountNumber(accountNumber)
+                .orElseThrow(() -> new ValidationException(Constants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
     }
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {

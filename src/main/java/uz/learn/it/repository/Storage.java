@@ -83,4 +83,11 @@ public class Storage {
                 .filter(loan -> loan.getId() == loanId)
                 .findFirst();
     }
+
+    public static Optional<Account> findAccountByAccountNumber(String accountNumber) {
+        return accounts
+                .stream()
+                .filter(account -> account.getAccountNumber().equals(accountNumber))
+                .findFirst();
+    }
 }

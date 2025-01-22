@@ -33,7 +33,7 @@ public class TransactionController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{accountId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{accountId:[0-9]+}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
             @PathVariable("accountId") int id,
             @Valid @RequestBody AccountTransactionRequestDTO accountTransactionRequestDTO) {

@@ -17,8 +17,6 @@ import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
-
-
     @Override
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
         checkForClientExistence(tempClient);

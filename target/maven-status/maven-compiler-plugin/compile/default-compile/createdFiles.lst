@@ -5,12 +5,10 @@ uz/learn/it/service/TransactionService.class
 uz/learn/it/service/AccountService.class
 uz/learn/it/dto/Client$ClientBuilder.class
 uz/learn/it/service/LoanService.class
-uz/learn/it/dto/Payment.class
 uz/learn/it/MyWebApplicationInitializer.class
 uz/learn/it/exception/notfound/LoanNotFoundException.class
 uz/learn/it/dto/TransactionHistory.class
 uz/learn/it/dto/DailyLoanPaymentDebt$DailyLoanPaymentDebtBuilder.class
-uz/learn/it/dto/Payment$PaymentBuilder.class
 uz/learn/it/controller/AccountController.class
 uz/learn/it/dto/response/AccountCreationResponseDTO.class
 uz/learn/it/dto/Loan$LoanBuilder.class
