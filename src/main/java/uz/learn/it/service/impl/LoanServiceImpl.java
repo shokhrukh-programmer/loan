@@ -3,7 +3,7 @@ package uz.learn.it.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Client;
+import uz.learn.it.entity.Client;
 import uz.learn.it.dto.PaymentType;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.DailyLoanPaymentDebt;

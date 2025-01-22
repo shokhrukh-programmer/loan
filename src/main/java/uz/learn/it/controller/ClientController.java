@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Client;
+import uz.learn.it.entity.Client;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;

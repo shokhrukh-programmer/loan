@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
 import uz.learn.it.entity.Account;
 import uz.learn.it.dto.PaymentType;
-import uz.learn.it.dto.TransactionHistory;
+import uz.learn.it.entity.TransactionHistory;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.ValidationException;
