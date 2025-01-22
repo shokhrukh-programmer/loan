@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -48,13 +47,13 @@ public class LoanManagementConfig implements WebMvcConfigurer {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource());
-        sessionFactoryBean.setPackagesToScan("uz.learn.it.entity"); // Adjust package to your model location
+        sessionFactoryBean.setPackagesToScan("uz.learn.it.entity");
 
         // Hibernate properties
         Properties hibernateProperties = new Properties();
         hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         hibernateProperties.put("hibernate.show_sql", "true");
-        hibernateProperties.put("hibernate.hbm2ddl.auto", "update"); // use "create" or "validate" as needed
+        hibernateProperties.put("hibernate.hbm2ddl.auto", "update");
 
         sessionFactoryBean.setHibernateProperties(hibernateProperties);
         return sessionFactoryBean;

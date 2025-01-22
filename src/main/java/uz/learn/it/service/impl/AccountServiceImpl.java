@@ -3,7 +3,7 @@ package uz.learn.it.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.AccountType;
+import uz.learn.it.enums.AccountType;
 import uz.learn.it.entity.Account;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.exception.AlreadyExistException;
@@ -33,9 +33,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = Account.builder()
                 .accountType(accountType)
                 .accountNumber(
-                        accountType.equals(AccountType.ACCOUNT.name()) ?
-                                AccountNumberGenerator.generateAccountNumber() :
-                                AccountNumberGenerator.generateDepositNumber()
+                        generateAccountNumberBasedOnType(accountType)
                 )
                 .clientId(clientId)
                 .build();
@@ -62,5 +60,11 @@ public class AccountServiceImpl implements AccountService {
                         accountType, clientId));
             }
         }
+    }
+
+    private String generateAccountNumberBasedOnType(String accountType) {
+        return accountType.equals(AccountType.ACCOUNT.name()) ?
+                AccountNumberGenerator.generateAccountNumber() :
+                AccountNumberGenerator.generateDepositNumber();
     }
 }

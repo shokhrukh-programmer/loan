@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface LoanDAO {
     List<Loan> getLoans();
+
     void saveLoan(Loan loan);
+
     Loan findLoanByLoanId(long loanId);
 }

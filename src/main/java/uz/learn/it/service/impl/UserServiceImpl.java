@@ -3,7 +3,6 @@ package uz.learn.it.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.entity.UserCredential;
-import uz.learn.it.repository.Storage;
 import uz.learn.it.repository.UserDAO;
 import uz.learn.it.service.UserService;
 

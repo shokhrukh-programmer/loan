@@ -1,4 +1,4 @@
-package uz.learn.it.dto;
+package uz.learn.it.enums;
 
 public enum AccountType {
     ACCOUNT, DEPOSIT

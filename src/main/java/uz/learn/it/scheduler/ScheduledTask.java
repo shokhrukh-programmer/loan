@@ -4,19 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uz.learn.it.service.LoanService;
+import uz.learn.it.service.TransactionService;
 
 @Component
 public class ScheduledTask {
-    private final LoanService loanService;
+    private final TransactionService transactionService;
 
     @Autowired
-    public ScheduledTask(LoanService loanService) {
-        this.loanService = loanService;
+    public ScheduledTask(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     //@Scheduled(cron = "0 0 0 * * ?") // Runs at midnight daily
     @Scheduled(cron = "*/5 * * * * ?")
     public void writeDailyInterest() {
-        loanService.calculateAndWriteInterest();
+        transactionService.calculateAndWriteInterest();
     }
 }

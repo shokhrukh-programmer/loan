@@ -9,7 +9,6 @@ import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.exception.AlreadyExistException;
-import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.helper.PasswordGenerator;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.UserDAO;
@@ -20,11 +19,13 @@ import java.util.List;
 @Service
 public class ClientServiceImpl implements ClientService {
     private final ClientDAO clientDAO;
+
     private final UserDAO userDAO;
 
     @Autowired
     public ClientServiceImpl(ClientDAO clientDAO, UserDAO userDAO) {
         this.clientDAO = clientDAO;
+
         this.userDAO = userDAO;
     }
 
@@ -78,17 +79,6 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<Client> getClients() {
         return clientDAO.getClients();
-    }
-
-    @Override
-    public Client getClientById(long clientId) {
-        Client client = clientDAO.findClientByClientId(clientId);
-
-        if(client == null) {
-            throw new NotFoundException(Constants.CLIENT_NOT_FOUND_MESSAGE);
-        }
-
-        return client;
     }
 
     private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {

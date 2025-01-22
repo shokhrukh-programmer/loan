@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface UserDAO {
     List<UserCredential> getUserCredentials();
+
     void saveUserCredentials(UserCredential userCredential);
 }

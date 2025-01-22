@@ -13,6 +13,7 @@ import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.service.LoanService;
+import uz.learn.it.service.TransactionService;
 
 import java.util.List;
 
@@ -20,10 +21,12 @@ import java.util.List;
 @RequestMapping("/api/loans")
 public class LoanController {
     private final LoanService loanService;
+    private final TransactionService transactionService;
 
     @Autowired
-    public LoanController(LoanService loanService) {
+    public LoanController(LoanService loanService, TransactionService transactionService) {
         this.loanService = loanService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +44,7 @@ public class LoanController {
             @PathVariable("loanId") int loanId) {
         APIResponseDTO<List<DailyLoanPaymentDebt>> apiResponseDTO = new APIResponseDTO<>();
 
-        apiResponseDTO.setData(loanService.getDailyPaymentsById(loanId));
+        apiResponseDTO.setData(transactionService.getDailyPaymentsById(loanId));
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
@@ -61,7 +64,7 @@ public class LoanController {
     @PostMapping(value = "/{loanId:[0-9]+}/payments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> doPaymentToLoan(
             @PathVariable("loanId") int loanId, @Valid @RequestBody LoanPaymentRequestDTO loan) {
-        loanService.payForLoanDebt(loanId, loan);
+        transactionService.payForLoanDebt(loanId, loan);
 
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
 

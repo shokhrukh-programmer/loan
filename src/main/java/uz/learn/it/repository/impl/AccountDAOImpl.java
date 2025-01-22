@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public class AccountDAOImpl implements AccountDAO {
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     @Autowired
     public AccountDAOImpl(SessionFactory sessionFactory) {
