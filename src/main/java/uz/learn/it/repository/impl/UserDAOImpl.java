@@ -2,9 +2,11 @@ package uz.learn.it.repository.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.handler.ExceptionHandlingWebHandler;
 import uz.learn.it.entity.UserCredential;
 import uz.learn.it.repository.UserDAO;
 
@@ -22,9 +24,21 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional
     public void saveUserCredentials(UserCredential userCredential) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = null;
+        Transaction tx = null;
 
-        session.saveOrUpdate(userCredential);
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+
+            session.saveOrUpdate(userCredential);
+
+            tx.commit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            session.close();
+        }
     }
 
     @Override

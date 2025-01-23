@@ -28,6 +28,7 @@ C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\service\LoanServic
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\constant\Constants.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\repository\Storage.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\repository\UserDAO.java
+C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\config\SessionFactoryProvider.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\service\impl\UserServiceImpl.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\config\HibernateConfig.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\repository\impl\UserDAOImpl.java

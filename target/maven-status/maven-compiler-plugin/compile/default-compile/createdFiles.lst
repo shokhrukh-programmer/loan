@@ -39,6 +39,7 @@ uz\learn\it\exception\notfound\LoanNotFoundException.class
 uz\learn\it\repository\AccountDAO.class
 uz\learn\it\entity\Client$ClientBuilder.class
 uz\learn\it\dto\response\AccountCreationResponseDTO.class
+uz\learn\it\config\SessionFactoryProvider.class
 uz\learn\it\entity\TransactionHistory.class
 uz\learn\it\repository\TransactionDAO.class
 uz\learn\it\dto\response\APIResponseDTO.class

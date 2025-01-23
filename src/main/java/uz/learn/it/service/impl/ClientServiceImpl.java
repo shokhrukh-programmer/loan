@@ -33,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
-        checkForClientExistence(tempClient);
+        //checkForClientExistence(tempClient);
 
         Client client = Client.builder()
                 .firstName(tempClient.getFirstName())
@@ -86,6 +86,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
+        if(clientDAO.getClients() == null) {
+            return;
+        }
         boolean clientExists = clientDAO.getClients().stream()
                 .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
 
