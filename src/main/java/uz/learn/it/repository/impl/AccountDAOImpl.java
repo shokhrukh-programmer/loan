@@ -20,7 +20,6 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    @Transactional
     public void saveAccount(Account account) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -28,18 +27,16 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    @Transactional
     public Account findAccountById(long accountId) {
         Session session = sessionFactory.getCurrentSession();
 
         return session
-                .createQuery("from Account a where a.id =: accountId", Account.class)
+                .createQuery("from Ac a where a.id =: accountId", Account.class)
                 .setParameter("accountId", accountId)
                 .getSingleResult();
     }
 
     @Override
-    @Transactional
     public List<Account> getAccountsByClientId(long clientId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -50,7 +47,6 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    @Transactional
     public Account findAccountByAccountNumber(String accountNumber) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -61,7 +57,6 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    @Transactional
     public List<Account> getAccounts() {
         Session session = sessionFactory.getCurrentSession();
 

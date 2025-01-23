@@ -14,6 +14,7 @@ import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.UserDAO;
 import uz.learn.it.service.ClientService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
         checkForClientExistence(tempClient);
 
@@ -47,6 +49,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public void updateClientById(long clientId, ClientModificationRequestDTO tempClient) {
         Client client = clientDAO.findClientByClientId(clientId);
 
@@ -77,6 +80,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public List<Client> getClients() {
         return clientDAO.getClients();
     }

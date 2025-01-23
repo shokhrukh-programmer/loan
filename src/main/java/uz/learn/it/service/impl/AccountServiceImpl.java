@@ -11,6 +11,7 @@ import uz.learn.it.helper.AccountNumberGenerator;
 import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.service.AccountService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void createAccount(AccountCreationRequestDTO accountCreationRequestDTO) {
         String accountType = accountCreationRequestDTO.getAccountType();
 
@@ -42,11 +44,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public List<Account> getAccountsByClientId(Long clientId) {
         return accountDAO.getAccountsByClientId(clientId);
     }
 
     @Override
+    @Transactional
     public List<Account> getAccounts() {
         return accountDAO.getAccounts();
     }
