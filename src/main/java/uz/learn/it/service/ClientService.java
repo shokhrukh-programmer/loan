@@ -10,7 +10,7 @@ import java.util.List;
 public interface ClientService {
     Client getClientById(long clientId);
 
-    List<Client> getClients();
+    List<uz.learn.it.entity.Client> getClients();
 
     ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO client);
 

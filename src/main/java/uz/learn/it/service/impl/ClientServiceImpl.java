@@ -1,5 +1,6 @@
 package uz.learn.it.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
 import uz.learn.it.dto.Client;
@@ -10,6 +11,7 @@ import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.helper.PasswordGenerator;
+import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.Storage;
 import uz.learn.it.service.ClientService;
 
@@ -17,6 +19,9 @@ import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
+    @Autowired
+    private ClientDAO clientDAO;
+
     @Override
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
         checkForClientExistence(tempClient);
@@ -64,8 +69,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<Client> getClients() {
-        return Storage.clients;
+    public List<uz.learn.it.entity.Client> getClients() {
+        return clientDAO.findAll();
     }
 
     @Override

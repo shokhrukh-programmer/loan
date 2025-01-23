@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Client;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
@@ -27,8 +26,8 @@ public class ClientController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<Client>>> getClients() {
-        APIResponseDTO<List<Client>> apiResponseDTO = new APIResponseDTO<>();
+    public ResponseEntity<APIResponseDTO<List<uz.learn.it.entity.Client>>> getClients() {
+        APIResponseDTO<List<uz.learn.it.entity.Client>> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setData(
                 clientService.getClients()
