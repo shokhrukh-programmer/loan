@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public class ClientDAO {
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     @Autowired
     public ClientDAO(SessionFactory sessionFactory) {
@@ -52,7 +52,7 @@ public class ClientDAO {
     }
 
     public Client getClientById(long clientId) {
-        Query query = null;
+        Query<Client> query = null;
 
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
@@ -67,6 +67,48 @@ public class ClientDAO {
             e.printStackTrace();
         }
 
-        return (Client) query.getSingleResult();
+        return query.getSingleResult();
+    }
+
+    public void update(Client tempClient) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            Client client = session.get(Client.class, tempClient.getId());
+            // Perform the merge
+            if (client != null) {
+                // Manually update only the required fields
+                if (tempClient.getFirstName() != null) {
+                    client.setFirstName(tempClient.getFirstName());
+                }
+                if (tempClient.getLastName() != null) {
+                    client.setLastName(tempClient.getLastName());
+                }
+                if (tempClient.getPassportInfo() != null) {
+                    client.setPassportInfo(tempClient.getPassportInfo());
+                }
+                if (tempClient.getPhoneNumber() != null) {
+                    client.setPhoneNumber(tempClient.getPhoneNumber());
+                }
+                if (tempClient.getRole() != null) {
+                    client.setRole(tempClient.getRole());
+                }
+
+                // Merge the entity to persist the changes
+                session.merge(client);
+
+                session.getTransaction().commit();// Only modified fields are updated
+            }
+        } catch (Exception e) {
+            if (session != null && session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close(); // Ensure the session is closed
+            }
+        }
     }
 }

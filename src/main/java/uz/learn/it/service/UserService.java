@@ -1,9 +1,9 @@
 package uz.learn.it.service;
 
-import uz.learn.it.dto.UserCredentials;
+import uz.learn.it.entity.UserCredential;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserCredentials> getUserCredentials();
+    List<UserCredential> getUserCredentials();
 }

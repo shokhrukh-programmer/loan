@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.TransactionHistory;
+import uz.learn.it.entity.TransactionHistory;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.service.TransactionService;

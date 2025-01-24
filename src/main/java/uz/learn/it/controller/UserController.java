@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uz.learn.it.dto.UserCredentials;
+import uz.learn.it.entity.UserCredential;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.service.UserService;
 
@@ -26,8 +26,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<UserCredentials>>> getUserDetails() {
-        APIResponseDTO<List<UserCredentials>> apiResponseDTO = new APIResponseDTO<>();
+    public ResponseEntity<APIResponseDTO<List<UserCredential>>> getUserDetails() {
+        APIResponseDTO<List<UserCredential>> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setData(
                 userService.getUserCredentials()

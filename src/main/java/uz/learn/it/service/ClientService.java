@@ -1,7 +1,6 @@
 package uz.learn.it.service;
 
 import uz.learn.it.entity.Client;
-import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 
@@ -14,5 +13,5 @@ public interface ClientService {
 
     ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO client);
 
-    void updateClientById(long clientId, ClientModificationRequestDTO client);
+    void updateClientById(Client client);
 }

@@ -1,19 +1,27 @@
 package uz.learn.it.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Account;
+import uz.learn.it.entity.Account;
 import uz.learn.it.dto.AccountType;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.helper.AccountNumberGenerator;
-import uz.learn.it.repository.Storage;
+import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.service.AccountService;
 
 import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
+    private final AccountDAO accountDAO;
+
+    @Autowired
+    public AccountServiceImpl(AccountDAO accountDAO) {
+        this.accountDAO = accountDAO;
+    }
+
     @Override
     public void createAccount(AccountCreationRequestDTO accountCreationRequestDTO) {
         String accountType = accountCreationRequestDTO.getAccountType();
@@ -32,17 +40,17 @@ public class AccountServiceImpl implements AccountService {
                 .clientId(clientId)
                 .build();
 
-        Storage.addAccount(account);
+        accountDAO.saveAccount(account);
     }
 
     @Override
     public List<Account> getAccountsByClientId(Long clientId) {
-        return Storage.getAccountsByClientId(clientId);
+        return accountDAO.getAccountsByClientId(clientId);
     }
 
     @Override
     public List<Account> getAccounts() {
-        return Storage.accounts;
+        return accountDAO.getAccounts();
     }
 
     private void checkForAccountAlreadyExistence(Long clientId, String accountType) {
