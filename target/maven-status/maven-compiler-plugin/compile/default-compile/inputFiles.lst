@@ -25,7 +25,6 @@ C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\dto\Account.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\constant\Constants.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\repository\Storage.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\service\impl\UserServiceImpl.java
-C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\config\HibernateConfig.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\dto\DailyLoanPaymentDebt.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\dto\UserCredentials.java
 C:\Users\user\Documents\GitHub\loan\src\main\java\uz\learn\it\helper\AccountNumberGenerator.java

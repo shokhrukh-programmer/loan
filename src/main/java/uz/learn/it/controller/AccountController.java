@@ -1,6 +1,5 @@
 package uz.learn.it.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +12,7 @@ import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.AccountCreationResponseDTO;
 import uz.learn.it.service.AccountService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController

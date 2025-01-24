@@ -1,7 +1,8 @@
 package uz.learn.it.dto.request;
 
-import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import javax.validation.constraints.*;
 
 @Data
 public class ClientRegistrationRequestDTO {

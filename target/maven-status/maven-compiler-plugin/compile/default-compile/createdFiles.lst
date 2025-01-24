@@ -3,7 +3,6 @@ uz\learn\it\dto\request\LoanCreationRequestDTO.class
 uz\learn\it\service\ClientService.class
 uz\learn\it\exception\notfound\AccountNotFoundException.class
 uz\learn\it\dto\UserCredentials$UserCredentialsBuilder.class
-uz\learn\it\config\HibernateConfig.class
 uz\learn\it\dto\TransactionHistory$TransactionHistoryBuilder.class
 uz\learn\it\dto\UserCredentials.class
 uz\learn\it\dto\TransactionHistory.class
@@ -36,6 +35,7 @@ uz\learn\it\controller\LoanController.class
 uz\learn\it\dto\request\AccountCreationRequestDTO.class
 uz\learn\it\dto\Loan.class
 uz\learn\it\exception\notfound\LoanNotFoundException.class
+uz\learn\it\entity\Client$ClientBuilder.class
 uz\learn\it\dto\response\AccountCreationResponseDTO.class
 uz\learn\it\dto\Account$AccountBuilder.class
 uz\learn\it\dto\response\APIResponseDTO.class

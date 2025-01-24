@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 @ControllerAdvice
-@Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<APIResponseDTO<String>> handleAlreadyExistException(AlreadyExistException ex) {
         APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(Constants.BAD_REQUEST_CODE, ex.getMessage(),
                 null);
 
-        log.error(ex.getMessage());
+
+        //log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
     }
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
             if (processedFields.add(error.getField())) {
                 errors.add(error.getDefaultMessage());
 
-                log.error(error.getDefaultMessage());
+            //    log.error(error.getDefaultMessage());
             }
         }
 
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(Constants.NOT_FOUND_CODE,
                 ex.getMessage(), null);
 
-        log.error(ex.getMessage());
+        //log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.NOT_FOUND);
     }
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(Constants.BAD_REQUEST_CODE,
                 ex.getMessage(), null);
 
-        log.error(ex.getMessage());
+        //log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.BAD_REQUEST);
     }

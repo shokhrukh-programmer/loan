@@ -1,21 +1,21 @@
 package uz.learn.it.dto.response;
-
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+//
+//import jakarta.xml.bind.annotation.XmlElement;
+//import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@XmlRootElement
+//@XmlRootElement
 public class APIResponseDTO<T> {
-    @XmlElement
+//    @XmlElement
     private int code;
 
-    @XmlElement
+//    @XmlElement
     private String message;
 
-    @XmlElement
+//    @XmlElement
     private T data;
 
     public APIResponseDTO() {
