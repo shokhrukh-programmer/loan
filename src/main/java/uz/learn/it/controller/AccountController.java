@@ -1,5 +1,6 @@
 package uz.learn.it.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +13,6 @@ import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.AccountCreationResponseDTO;
 import uz.learn.it.service.AccountService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +25,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<Account>>> getAccounts() {
         APIResponseDTO<List<Account>> apiResponseDTO = new APIResponseDTO<>();
 
@@ -36,12 +36,12 @@ public class AccountController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{accountId:[0-9]+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<Account>>> getAccountById(
-            @PathVariable("accountId") Long accountId) {
+    @GetMapping(value = "/{clientId:[0-9]+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIResponseDTO<List<Account>>> getAccountByClientId(
+            @PathVariable("clientId") long clientId) {
         APIResponseDTO<List<Account>> apiResponseDTO = new APIResponseDTO<>();
 
-        apiResponseDTO.setData(accountService.getAccountsByClientId(accountId));
+        apiResponseDTO.setData(accountService.getAccountsByClientId(clientId));
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
@@ -49,11 +49,9 @@ public class AccountController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<AccountCreationResponseDTO>> createAccount(
             @Valid @RequestBody AccountCreationRequestDTO accountCreationRequestDTO) {
-        accountService.createAccount(accountCreationRequestDTO);
-
         APIResponseDTO<AccountCreationResponseDTO> apiResponseDTO = new APIResponseDTO<>();
-
         apiResponseDTO.setMessage(Constants.ACCOUNT_OPENED_SUCCESSFULLY_MESSAGE);
+        accountService.createAccount(accountCreationRequestDTO);
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }

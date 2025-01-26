@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
 import uz.learn.it.entity.Account;
-import uz.learn.it.dto.AccountType;
+import uz.learn.it.enums.AccountType;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.helper.AccountNumberGenerator;
@@ -44,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAccountsByClientId(Long clientId) {
+    public List<Account> getAccountsByClientId(long clientId) {
         return accountDAO.getAccountsByClientId(clientId);
     }
 
@@ -53,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
         return accountDAO.getAccounts();
     }
 
-    private void checkForAccountAlreadyExistence(Long clientId, String accountType) {
+    private void checkForAccountAlreadyExistence(long clientId, String accountType) {
         List<Account> accounts = getAccountsByClientId(clientId);
 
         for(Account a : accounts) {

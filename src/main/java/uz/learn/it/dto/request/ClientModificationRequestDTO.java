@@ -1,9 +1,8 @@
 package uz.learn.it.dto.request;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Data
 public class ClientModificationRequestDTO {

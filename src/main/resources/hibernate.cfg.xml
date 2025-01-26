@@ -24,13 +24,18 @@
 
         <!-- Echo all executed SQL to stdout -->
         <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
         <property name="hibernate.current_session_context_class">thread</property>
 
         <property name="hibernate.validator.apply_to_ddl">false</property>
         <property name="hibernate.validator.autoregister_listeners">false</property>
         <!-- Names the annotated entity class -->
         <mapping class="uz.learn.it.entity.Client"/>
+        <mapping class="uz.learn.it.entity.Account"/>
+        <mapping class="uz.learn.it.entity.DailyLoanPaymentDebt"/>
+        <mapping class="uz.learn.it.entity.Loan"/>
+        <mapping class="uz.learn.it.entity.TransactionHistory"/>
+        <mapping class="uz.learn.it.entity.UserCredential"/>
 
     </session-factory>
 

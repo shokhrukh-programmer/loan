@@ -6,13 +6,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
+import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
 import uz.learn.it.service.ClientService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -26,8 +27,8 @@ public class ClientController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<uz.learn.it.entity.Client>>> getClients() {
-        APIResponseDTO<List<uz.learn.it.entity.Client>> apiResponseDTO = new APIResponseDTO<>();
+    public ResponseEntity<APIResponseDTO<List<Client>>> getClients() {
+        APIResponseDTO<List<Client>> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setData(
                 clientService.getClients()
@@ -50,12 +51,12 @@ public class ClientController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "{clientId:[0-9]+}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> updateClient(
-            @RequestBody Client client) {
+            @PathVariable("clientId") long clientId, @Valid @RequestBody ClientModificationRequestDTO client) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
 
-        clientService.updateClientById(client);
+        clientService.updateClientById(clientId, client);
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }

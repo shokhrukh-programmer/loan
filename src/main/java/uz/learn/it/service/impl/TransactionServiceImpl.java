@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
 import uz.learn.it.entity.Account;
-import uz.learn.it.dto.PaymentType;
+import uz.learn.it.enums.PaymentType;
 import uz.learn.it.entity.TransactionHistory;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.exception.ValidationException;
+import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.repository.TransactionDAO;
@@ -19,11 +20,13 @@ import java.util.List;
 @Service
 public class TransactionServiceImpl implements TransactionService {
     private final TransactionDAO transactionDAO;
+
     private final AccountDAO accountDAO;
 
     @Autowired
     public TransactionServiceImpl(TransactionDAO transactionDAO, AccountDAO accountDAO) {
         this.transactionDAO = transactionDAO;
+
         this.accountDAO = accountDAO;
     }
 
@@ -51,7 +54,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Account getAccountByAccountId(long accountId) {
-        return accountDAO.getAccountById(accountId);
+        return accountDAO.getAccountByAccountId(accountId)
+                .orElseThrow(AccountNotFoundException::new);
     }
 
     private StringBuilder getOperationByType(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
@@ -65,6 +69,9 @@ public class TransactionServiceImpl implements TransactionService {
             account.setBalance(account.getBalance() - accountTransactionRequestDTO.getAmountToTopUpAndWithdraw());
             operation.append("- ");
         }
+
+        accountDAO.updateAccount(account);
+
         return operation;
     }
 

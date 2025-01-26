@@ -8,7 +8,7 @@ import java.util.List;
 public interface AccountService {
     void createAccount(AccountCreationRequestDTO accountCreationRequestDTO);
 
-    List<Account> getAccountsByClientId(Long id);
+    List<Account> getAccountsByClientId(long id);
 
     List<Account> getAccounts();
 }

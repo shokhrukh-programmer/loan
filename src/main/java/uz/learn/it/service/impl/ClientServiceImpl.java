@@ -3,14 +3,14 @@ package uz.learn.it.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
+import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.entity.Client;
-import uz.learn.it.dto.UserCredentials;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.exception.AlreadyExistException;
-import uz.learn.it.helper.PasswordGenerator;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.service.ClientService;
+import uz.learn.it.service.UserService;
 
 import java.util.List;
 
@@ -18,14 +18,18 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
     private final ClientDAO clientDAO;
 
+    private final UserService userService;
+
     @Autowired
-    public ClientServiceImpl(ClientDAO clientDAO) {
+    public ClientServiceImpl(ClientDAO clientDAO, UserService userService) {
         this.clientDAO = clientDAO;
+
+        this.userService = userService;
     }
 
     @Override
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
-        //checkForClientExistence(tempClient);
+        checkForClientExistence(tempClient);
 
         Client client = Client.builder()
                 .firstName(tempClient.getFirstName())
@@ -37,24 +41,17 @@ public class ClientServiceImpl implements ClientService {
 
         clientDAO.save(client);
 
-        return saveUsernameAndPassword(client.getPhoneNumber(), client.getId());
+        return userService.saveUsernameAndPassword(client.getPhoneNumber(), client.getId());
     }
 
     @Override
-    public void updateClientById(Client client) {
-        clientDAO.update(client);
+    public void updateClientById(long clientId, ClientModificationRequestDTO client) {
+        clientDAO.update(clientId, client);
     }
-
-
 
     @Override
     public List<Client> getClients() {
         return clientDAO.findAll();
-    }
-
-    @Override
-    public Client getClientById(long clientId) {
-        return clientDAO.getClientById(clientId);
     }
 
     private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
@@ -69,20 +66,5 @@ public class ClientServiceImpl implements ClientService {
     private boolean hasMatchingDetails(Client client, ClientRegistrationRequestDTO dto) {
         return client.getPassportInfo().equals(dto.getPassportInfo()) ||
                 client.getPhoneNumber().equals(dto.getPhoneNumber());
-    }
-
-
-    private ClientRegistrationResponseDTO saveUsernameAndPassword(String phoneNumber, Long clientId) {
-        String password = PasswordGenerator.generatePassword();
-
-        Storage.addUserLoginDetails(
-                UserCredentials.builder()
-                        .username(phoneNumber)
-                        .password(password)
-                        .clientId(clientId)
-                        .build()
-        );
-
-        return new ClientRegistrationResponseDTO(phoneNumber, password);
     }
 }

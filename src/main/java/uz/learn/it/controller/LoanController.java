@@ -1,5 +1,6 @@
 package uz.learn.it.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +14,6 @@ import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.service.LoanService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,7 +38,7 @@ public class LoanController {
     @GetMapping(value = "/{loanId:[0-9]+}/daily-loan-debt",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentDebt>>> getDailyInterest(
-            @PathVariable("loanId") int loanId) {
+            @PathVariable("loanId") long loanId) {
         APIResponseDTO<List<DailyLoanPaymentDebt>> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setData(loanService.getDailyPaymentsById(loanId));
@@ -60,7 +60,7 @@ public class LoanController {
 
     @PostMapping(value = "/{loanId:[0-9]+}/payments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> doPaymentToLoan(
-            @PathVariable("loanId") int loanId, @Valid @RequestBody LoanPaymentRequestDTO loan) {
+            @PathVariable("loanId") long loanId, @Valid @RequestBody LoanPaymentRequestDTO loan) {
         loanService.payForLoanDebt(loanId, loan);
 
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();

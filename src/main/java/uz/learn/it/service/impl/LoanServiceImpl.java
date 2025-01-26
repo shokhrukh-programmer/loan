@@ -3,15 +3,19 @@ package uz.learn.it.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.PaymentType;
+import uz.learn.it.enums.PaymentType;
 import uz.learn.it.entity.*;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.exception.ValidationException;
+import uz.learn.it.exception.notfound.AccountNotFoundException;
+import uz.learn.it.exception.notfound.ClientNotFoundException;
+import uz.learn.it.exception.notfound.LoanNotFoundException;
 import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.AccountDAO;
-import uz.learn.it.repository.DailyLoanDebtDAO;
+import uz.learn.it.repository.impl.ClientDAOImpl;
+import uz.learn.it.repository.impl.DailyLoanDebtDAOImpl;
 import uz.learn.it.repository.LoanDAO;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
@@ -22,22 +26,33 @@ import java.util.List;
 @Service
 public class LoanServiceImpl implements LoanService {
     private final LoanDAO loanDAO;
+
     private final TransactionService transactionService;
+
     private final AccountDAO accountDAO;
-    private final DailyLoanDebtDAO dailyLoanDebtDAO;
+
+    private final DailyLoanDebtDAOImpl dailyLoanDebtDAOImpl;
+
+    private final ClientDAOImpl clientDAOImpl;
 
     @Autowired
     public LoanServiceImpl(TransactionService transactionService, LoanDAO loanDAO,
-                           AccountDAO accountDAO, DailyLoanDebtDAO dailyLoanDebtDAO) {
+                           AccountDAO accountDAO, DailyLoanDebtDAOImpl dailyLoanDebtDAOImpl,
+                           ClientDAOImpl clientDAOImpl) {
         this.transactionService = transactionService;
+
         this.loanDAO = loanDAO;
+
         this.accountDAO = accountDAO;
-        this.dailyLoanDebtDAO = dailyLoanDebtDAO;
+
+        this.dailyLoanDebtDAOImpl = dailyLoanDebtDAOImpl;
+
+        this.clientDAOImpl = clientDAOImpl;
     }
 
     @Override
     public void createLoan(LoanCreationRequestDTO loanRequest) {
-        //checkClientExistence(loanRequest);
+        checkClientExistence(loanRequest);
 
         Loan loan = Loan.builder()
                 .createdDate(DateFormatter.dateFormatter(new Date()))
@@ -67,31 +82,33 @@ public class LoanServiceImpl implements LoanService {
 
             l.setDebt(l.getDebt() + dailyInterest);
 
+            loanDAO.update(l);
+
             DailyLoanPaymentDebt dailyLoanPaymentDebt = DailyLoanPaymentDebt.builder()
                     .date(DateFormatter.dateFormatter(new Date()))
                     .dailyInterestAmount(dailyInterest)
                     .loanId(l.getId())
                     .build();
 
-            dailyLoanDebtDAO.saveDailyLoanDebt(dailyLoanPaymentDebt);
+            dailyLoanDebtDAOImpl.saveDailyLoanDebt(dailyLoanPaymentDebt);
         }
     }
 
     @Override
     public List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId) {
-        return dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId);
+        return dailyLoanDebtDAOImpl.getDailyLoanDebtsByLoanId(loanId);
     }
 
-//    private void checkClientExistence(LoanCreationRequestDTO loanRequest) {
-//        Storage.findClientById(loanRequest.getClientId())
-//                .orElseThrow(ClientNotFoundException::new);
-//    }
+    private void checkClientExistence(LoanCreationRequestDTO loanRequest) {
+        clientDAOImpl.getClientById(loanRequest.getClientId()).orElseThrow(ClientNotFoundException::new);
+    }
 
     @Override
     public void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails) {
-        Loan loan = loanDAO.getLoanByLoanId(loanId);
+        Loan loan = loanDAO.getLoanByLoanId(loanId).orElseThrow(LoanNotFoundException::new);
 
-        Account account = getAccountByAccountNumber(loanDetails.getAccountNumber());
+        Account account = accountDAO.getAccountByAccountNumber(loanDetails.getAccountNumber())
+                .orElseThrow(() -> new AccountNotFoundException(Constants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
 
         if(loanDetails.getPaymentAmount() > account.getBalance()) {
             throw new ValidationException(Constants.BALANCE_NOT_VALID_MESSAGE);
@@ -115,14 +132,8 @@ public class LoanServiceImpl implements LoanService {
         } else {
             loan.setBalance(loan.getBalance() - loanDetails.getPaymentAmount());
         }
-    }
 
-    private Loan getLoanById(long loanId) {
-        return loanDAO.getLoanByLoanId(loanId);
-    }
-
-    private Account getAccountByAccountNumber(String accountNumber) {
-        return accountDAO.getAccountsByAccountNumber(accountNumber);
+        loanDAO.update(loan);
     }
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {

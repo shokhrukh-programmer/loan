@@ -1,5 +1,6 @@
 package uz.learn.it.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +12,6 @@ import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.service.TransactionService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -35,13 +35,13 @@ public class TransactionController {
 
     @PostMapping(value = "/{accountId:[0-9]+}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
-            @PathVariable("accountId") int id,
+            @PathVariable("accountId") long accountId,
             @Valid @RequestBody AccountTransactionRequestDTO accountTransactionRequestDTO) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setMessage(Constants.TRANSACTION_DONE_SUCCESSFULLY_MESSAGE);
 
-        transactionService.makeTransaction(id, accountTransactionRequestDTO);
+        transactionService.makeTransaction(accountId, accountTransactionRequestDTO);
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
