@@ -1,20 +1,19 @@
 package uz.learn.it.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Account;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountDAO {
-    void saveAccount(Account account);
+@Repository
+public interface AccountDAO extends JpaRepository<Account, Long> {
+    List<Account> getAccountsByClient_Id(long clientId);
 
-    List<Account> getAccountsByClientId(long clientId);
+    Optional<Account> getAccountsByAccountNumber(String accountNumber);
 
-    List<Account> getAccounts();
+    Optional<Account> getAccountsById(long id);
 
-    Optional<Account> getAccountByAccountNumber(String accountNumber);
-
-    Optional<Account> getAccountByAccountId(long accountId);
-    
-    void updateAccount(Account account);
+    boolean existsAccountByClient_IdAndAccountType(long clientId, String accountType);
 }

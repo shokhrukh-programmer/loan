@@ -36,7 +36,9 @@ public class AccountServiceImpl implements AccountService {
 
         Client client = clientDAO.getClientById(clientId).orElseThrow(ClientNotFoundException::new);
 
-        checkForAccountAlreadyExistence(clientId, accountType);
+        if(accountDAO.existsAccountByClient_IdAndAccountType(clientId, accountType)) {
+            throw new AlreadyExistException(Constants.ACCOUNT_EXIST_MESSAGE);
+        }
 
         Account account = Account.builder()
                 .accountType(accountType)
@@ -48,28 +50,16 @@ public class AccountServiceImpl implements AccountService {
                 .client(client)
                 .build();
 
-        accountDAO.saveAccount(account);
+        accountDAO.save(account);
     }
 
     @Override
     public List<Account> getAccountsByClientId(long clientId) {
-        return accountDAO.getAccountsByClientId(clientId);
+        return accountDAO.getAccountsByClient_Id(clientId);
     }
 
     @Override
     public List<Account> getAccounts() {
-        return accountDAO.getAccounts();
-    }
-
-    private void checkForAccountAlreadyExistence(long clientId, String accountType) {
-        List<Account> accounts = getAccountsByClientId(clientId);
-        if (accounts != null) {
-            for(Account a : accounts) {
-                if(a.getAccountType().equals(accountType)) {
-                    throw new AlreadyExistException(String.format(Constants.ACCOUNT_EXIST_MESSAGE,
-                            accountType, clientId));
-                }
-            }
-        }
+        return accountDAO.findAll();
     }
 }

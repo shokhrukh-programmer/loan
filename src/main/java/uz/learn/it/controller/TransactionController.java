@@ -24,7 +24,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping(value = "/histories", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/histories")
     public ResponseEntity<APIResponseDTO<List<TransactionHistory>>> getOperationHistory() {
         APIResponseDTO<List<TransactionHistory>> apiResponseDTO = new APIResponseDTO<>();
 
@@ -33,10 +33,10 @@ public class TransactionController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{accountId:[0-9]+}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{accountId:[0-9]+}")
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
-            @PathVariable("accountId") long accountId,
-            @Valid @RequestBody AccountTransactionRequestDTO accountTransactionRequestDTO) {
+            @PathVariable long accountId,
+            @RequestBody @Valid AccountTransactionRequestDTO accountTransactionRequestDTO) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setMessage(Constants.TRANSACTION_DONE_SUCCESSFULLY_MESSAGE);

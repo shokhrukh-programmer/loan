@@ -1,16 +1,10 @@
 package uz.learn.it.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Loan;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface LoanDAO {
-    void saveLoan(Loan loan);
-
-    List<Loan> getLoans();
-
-    Optional<Loan> getLoanByLoanId(long loanId);
-
-    void update(Loan loan);
+@Repository
+public interface LoanDAO extends JpaRepository<Loan, Long> {
+    Loan getLoanById(long id);
 }

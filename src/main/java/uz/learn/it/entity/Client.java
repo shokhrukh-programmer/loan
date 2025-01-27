@@ -1,8 +1,7 @@
 package uz.learn.it.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "clients")

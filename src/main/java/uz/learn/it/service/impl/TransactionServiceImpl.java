@@ -39,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionHistory> getOperationHistory() {
-        return transactionDAO.getTransactionHistory();
+        return transactionDAO.findAll();
     }
 
     @Override
@@ -58,12 +58,12 @@ public class TransactionServiceImpl implements TransactionService {
                 .client(client)
                 .build();
 
-        transactionDAO.saveTransaction(transactionHistory);
+        transactionDAO.save(transactionHistory);
     }
 
     @Override
     public Account getAccountByAccountId(long accountId) {
-        return accountDAO.getAccountByAccountId(accountId)
+        return accountDAO.getAccountsById(accountId)
                 .orElseThrow(AccountNotFoundException::new);
     }
 
@@ -79,7 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
             operation.append("- ");
         }
 
-        accountDAO.updateAccount(account);
+        accountDAO.save(account);
 
         return operation;
     }

@@ -3,7 +3,6 @@ package uz.learn.it.dto.request;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-
 @Data
 public class ClientRegistrationRequestDTO {
     @NotNull(message = "First name can not be null")

@@ -1,17 +1,14 @@
 package uz.learn.it.repository;
 
-import uz.learn.it.dto.request.ClientModificationRequestDTO;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Client;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface ClientDAO {
-    List<Client> findAll();
-
-    void save(Client client);
-
+@Repository
+public interface ClientDAO extends JpaRepository<Client, Long> {
     Optional<Client> getClientById(long clientId);
 
-    void update(long clientId, ClientModificationRequestDTO tempClient);
+    boolean existsClientByPhoneNumberOrPassportInfo(String phoneNumber, String passportInfo);
 }

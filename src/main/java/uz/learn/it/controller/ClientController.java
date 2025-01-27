@@ -2,7 +2,6 @@ package uz.learn.it.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
@@ -26,7 +25,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<APIResponseDTO<List<Client>>> getClients() {
         APIResponseDTO<List<Client>> apiResponseDTO = new APIResponseDTO<>();
 
@@ -37,9 +36,9 @@ public class ClientController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<APIResponseDTO<ClientRegistrationResponseDTO>> registerClient(
-            @Valid @RequestBody ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
+             @RequestBody @Valid ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
         APIResponseDTO<ClientRegistrationResponseDTO> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setMessage(Constants.CLIENT_REGISTERED_SUCCESSFULLY_MESSAGE);
@@ -51,9 +50,9 @@ public class ClientController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PutMapping(value = "{clientId:[0-9]+}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "{clientId:[0-9]+}")
     public ResponseEntity<APIResponseDTO<String>> updateClient(
-            @PathVariable("clientId") long clientId, @Valid @RequestBody ClientModificationRequestDTO client) {
+            @PathVariable long clientId, @RequestBody @Valid ClientModificationRequestDTO client) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
 
         clientService.updateClientById(clientId, client);

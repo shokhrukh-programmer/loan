@@ -8,6 +8,7 @@ import uz.learn.it.entity.Client;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.exception.AlreadyExistException;
+import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.service.ClientService;
 import uz.learn.it.service.UserService;
@@ -29,7 +30,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
-        checkForClientExistence(tempClient);
+        if(clientDAO.existsClientByPhoneNumberOrPassportInfo(tempClient.getPhoneNumber(), tempClient.getPassportInfo())) {
+            throw new AlreadyExistException(Constants.CLIENT_ALREADY_EXIST_MESSAGE);
+        }
 
         Client client = Client.builder()
                 .firstName(tempClient.getFirstName())
@@ -45,26 +48,32 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void updateClientById(long clientId, ClientModificationRequestDTO client) {
-        clientDAO.update(clientId, client);
+    public void updateClientById(long clientId, ClientModificationRequestDTO tempClient) {
+        Client client = clientDAO.getClientById(clientId).orElseThrow(ClientNotFoundException::new);
+
+        if(client != null) {
+            if(tempClient.getFirstName() != null && !tempClient.getFirstName().isBlank()) {
+                client.setFirstName(tempClient.getFirstName());
+            }
+            if(tempClient.getLastName() != null && !tempClient.getLastName().isBlank()) {
+                client.setFirstName(tempClient.getLastName());
+            }
+            if(tempClient.getPhoneNumber() != null && !tempClient.getPhoneNumber().isBlank()) {
+                client.setPhoneNumber(tempClient.getPhoneNumber());
+            }
+            if(tempClient.getPassportInfo() != null && !tempClient.getPassportInfo().isBlank()) {
+                client.setPassportInfo(tempClient.getPassportInfo());
+            }
+            if(tempClient.getRole() != null && !tempClient.getRole().isBlank()) {
+                client.setRole(tempClient.getRole());
+            }
+        }
+
+        clientDAO.save(client);
     }
 
     @Override
     public List<Client> getClients() {
         return clientDAO.findAll();
-    }
-
-    private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
-        boolean clientExists = clientDAO.findAll().stream()
-                .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
-
-        if (clientExists) {
-            throw new AlreadyExistException(Constants.CLIENT_ALREADY_EXIST_MESSAGE);
-        }
-    }
-
-    private boolean hasMatchingDetails(Client client, ClientRegistrationRequestDTO dto) {
-        return client.getPassportInfo().equals(dto.getPassportInfo()) ||
-                client.getPhoneNumber().equals(dto.getPhoneNumber());
     }
 }

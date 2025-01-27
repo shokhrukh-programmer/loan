@@ -1,11 +1,12 @@
 package uz.learn.it.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.DailyLoanPaymentDebt;
 
 import java.util.List;
 
-public interface DailyLoanDebtDAO {
-    void saveDailyLoanDebt(DailyLoanPaymentDebt debt);
-
-    List<DailyLoanPaymentDebt> getDailyLoanDebtsByLoanId(long loanId);
+@Repository
+public interface DailyLoanDebtDAO extends JpaRepository<DailyLoanPaymentDebt, Long> {
+    List<DailyLoanPaymentDebt> getDailyLoanPaymentDebtsByLoan_Id(long loanId);
 }

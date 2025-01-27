@@ -25,7 +25,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users")
     public ResponseEntity<APIResponseDTO<List<UserCredential>>> getUserDetails() {
         APIResponseDTO<List<UserCredential>> apiResponseDTO = new APIResponseDTO<>();
 

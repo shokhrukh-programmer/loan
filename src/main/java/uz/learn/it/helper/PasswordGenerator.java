@@ -31,7 +31,7 @@ public class PasswordGenerator {
 
         // Shuffle the password for randomness
         StringBuilder shuffledPassword = new StringBuilder(password.length());
-        while (password.length() > 0) {
+        while (!password.isEmpty()) {
             int index = random.nextInt(password.length());
             shuffledPassword.append(password.charAt(index));
             password.deleteCharAt(index);
