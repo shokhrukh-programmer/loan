@@ -13,19 +13,7 @@ import java.util.Properties;
 public class HibernateUtil {
     private static SessionFactory buildSessionJavaConfigFactory() {
         try {
-            Configuration configuration = new Configuration();
-
-            Properties props = new Properties();
-            props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
-            props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/loan_management");
-            props.put("hibernate.connection.username", "postgres");
-            props.put("hibernate.connection.password", "1");
-            props.put("hibernate.current_session_context_class", "thread");
-            props.put("hibernate.hbm2ddl.auto", "create");
-            props.put("hibernate.show_sql", "true");
-            props.put("hibernate.hbm2ddl.drop_cascade", "true");
-
-            configuration.setProperties(props);
+            Configuration configuration = getConfiguration();
 
             configuration.addAnnotatedClass(Account.class);
             configuration.addAnnotatedClass(Client.class);
@@ -45,6 +33,23 @@ public class HibernateUtil {
 
             throw new ExceptionInInitializerError(ex);
         }
+    }
+
+    private static Configuration getConfiguration() {
+        Configuration configuration = new Configuration();
+
+        Properties props = new Properties();
+        props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
+        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/loan_management");
+        props.put("hibernate.connection.username", "postgres");
+        props.put("hibernate.connection.password", "1");
+        props.put("hibernate.current_session_context_class", "thread");
+        props.put("hibernate.hbm2ddl.auto", "create");
+        props.put("hibernate.show_sql", "true");
+        props.put("hibernate.hbm2ddl.drop_cascade", "true");
+
+        configuration.setProperties(props);
+        return configuration;
     }
 
     public static SessionFactory getSessionJavaConfigFactory() {
