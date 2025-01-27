@@ -14,8 +14,8 @@ import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.exception.notfound.LoanNotFoundException;
 import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.AccountDAO;
-import uz.learn.it.repository.impl.ClientDAOImpl;
-import uz.learn.it.repository.impl.DailyLoanDebtDAOImpl;
+import uz.learn.it.repository.ClientDAO;
+import uz.learn.it.repository.DailyLoanDebtDAO;
 import uz.learn.it.repository.LoanDAO;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
@@ -31,28 +31,28 @@ public class LoanServiceImpl implements LoanService {
 
     private final AccountDAO accountDAO;
 
-    private final DailyLoanDebtDAOImpl dailyLoanDebtDAOImpl;
+    private final DailyLoanDebtDAO dailyLoanDebtDAO;
 
-    private final ClientDAOImpl clientDAOImpl;
+    private final ClientDAO clientDAO;
 
     @Autowired
     public LoanServiceImpl(TransactionService transactionService, LoanDAO loanDAO,
-                           AccountDAO accountDAO, DailyLoanDebtDAOImpl dailyLoanDebtDAOImpl,
-                           ClientDAOImpl clientDAOImpl) {
+                           AccountDAO accountDAO, DailyLoanDebtDAO dailyLoanDebtDAO,
+                           ClientDAO clientDAO) {
         this.transactionService = transactionService;
 
         this.loanDAO = loanDAO;
 
         this.accountDAO = accountDAO;
 
-        this.dailyLoanDebtDAOImpl = dailyLoanDebtDAOImpl;
+        this.dailyLoanDebtDAO = dailyLoanDebtDAO;
 
-        this.clientDAOImpl = clientDAOImpl;
+        this.clientDAO = clientDAO;
     }
 
     @Override
     public void createLoan(LoanCreationRequestDTO loanRequest) {
-        checkClientExistence(loanRequest);
+        Client client = checkClientExistence(loanRequest);
 
         Loan loan = Loan.builder()
                 .createdDate(DateFormatter.dateFormatter(new Date()))
@@ -60,7 +60,7 @@ public class LoanServiceImpl implements LoanService {
                 .term(loanRequest.getLoanTerm())
                 .interestRate(loanRequest.getInterestRate())
                 .balance(loanRequest.getLoanAmount())
-                .clientId(loanRequest.getClientId())
+                .client(client)
                 .build();
 
         loanDAO.saveLoan(loan);
@@ -87,20 +87,20 @@ public class LoanServiceImpl implements LoanService {
             DailyLoanPaymentDebt dailyLoanPaymentDebt = DailyLoanPaymentDebt.builder()
                     .date(DateFormatter.dateFormatter(new Date()))
                     .dailyInterestAmount(dailyInterest)
-                    .loanId(l.getId())
+                    .loan(l)
                     .build();
 
-            dailyLoanDebtDAOImpl.saveDailyLoanDebt(dailyLoanPaymentDebt);
+            dailyLoanDebtDAO.saveDailyLoanDebt(dailyLoanPaymentDebt);
         }
     }
 
     @Override
     public List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId) {
-        return dailyLoanDebtDAOImpl.getDailyLoanDebtsByLoanId(loanId);
+        return dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId);
     }
 
-    private void checkClientExistence(LoanCreationRequestDTO loanRequest) {
-        clientDAOImpl.getClientById(loanRequest.getClientId()).orElseThrow(ClientNotFoundException::new);
+    private Client checkClientExistence(LoanCreationRequestDTO loanRequest) {
+        return clientDAO.getClientById(loanRequest.getClientId()).orElseThrow(ClientNotFoundException::new);
     }
 
     @Override

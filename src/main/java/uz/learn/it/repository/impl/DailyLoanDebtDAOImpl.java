@@ -40,7 +40,7 @@ public class DailyLoanDebtDAOImpl implements DailyLoanDebtDAO {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
-            dailyLoanPaymentDebts = session.createQuery("from DailyLoanPaymentDebt where loanId = :loanId",
+            dailyLoanPaymentDebts = session.createQuery("from DailyLoanPaymentDebt where loan.id = :loanId",
                     DailyLoanPaymentDebt.class)
                     .setParameter("loanId", loanId)
                     .getResultList();

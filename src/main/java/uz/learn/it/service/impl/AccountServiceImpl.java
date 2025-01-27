@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uz.learn.it.constant.Constants;
 import uz.learn.it.entity.Account;
+import uz.learn.it.entity.Client;
 import uz.learn.it.enums.AccountType;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.exception.AlreadyExistException;
+import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.helper.AccountNumberGenerator;
 import uz.learn.it.repository.AccountDAO;
+import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.service.AccountService;
 
 import java.util.List;
@@ -17,9 +20,12 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
     private final AccountDAO accountDAO;
 
+    private final ClientDAO clientDAO;
+
     @Autowired
-    public AccountServiceImpl(AccountDAO accountDAO) {
+    public AccountServiceImpl(AccountDAO accountDAO, ClientDAO clientDAO) {
         this.accountDAO = accountDAO;
+        this.clientDAO = clientDAO;
     }
 
     @Override
@@ -27,6 +33,8 @@ public class AccountServiceImpl implements AccountService {
         String accountType = accountCreationRequestDTO.getAccountType();
 
         long clientId = accountCreationRequestDTO.getClientId();
+
+        Client client = clientDAO.getClientById(clientId).orElseThrow(ClientNotFoundException::new);
 
         checkForAccountAlreadyExistence(clientId, accountType);
 
@@ -37,7 +45,7 @@ public class AccountServiceImpl implements AccountService {
                                 AccountNumberGenerator.generateAccountNumber() :
                                 AccountNumberGenerator.generateDepositNumber()
                 )
-                .clientId(clientId)
+                .client(client)
                 .build();
 
         accountDAO.saveAccount(account);
@@ -55,11 +63,12 @@ public class AccountServiceImpl implements AccountService {
 
     private void checkForAccountAlreadyExistence(long clientId, String accountType) {
         List<Account> accounts = getAccountsByClientId(clientId);
-
-        for(Account a : accounts) {
-            if(a.getAccountType().equals(accountType)) {
-                throw new AlreadyExistException(String.format(Constants.ACCOUNT_EXIST_MESSAGE,
-                        accountType, clientId));
+        if (accounts != null) {
+            for(Account a : accounts) {
+                if(a.getAccountType().equals(accountType)) {
+                    throw new AlreadyExistException(String.format(Constants.ACCOUNT_EXIST_MESSAGE,
+                            accountType, clientId));
+                }
             }
         }
     }

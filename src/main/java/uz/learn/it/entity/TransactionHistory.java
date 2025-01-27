@@ -26,5 +26,7 @@ public class TransactionHistory {
 
     private double remainingBalance;
 
-    private long clientId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    private Client client;
 }

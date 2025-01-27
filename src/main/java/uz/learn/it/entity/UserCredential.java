@@ -22,5 +22,7 @@ public class UserCredential {
 
     private String password;
 
-    private long clientId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    private Client client;
 }

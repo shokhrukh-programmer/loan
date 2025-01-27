@@ -39,16 +39,23 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public List<Account> getAccountsByClientId(long clientId) {
-        List<Account> accounts;
+        List<Account> accounts = null;
 
         try(Session session = sessionFactory.openSession()) {
             session.beginTransaction();
 
-            Query<Account> query = session.createQuery("from Account where clientId = :clientId", Account.class)
+            Query<Account> query = session.createQuery("from Account where client.id = :clientId", Account.class)
                     .setParameter("clientId", clientId);
+
             accounts = query.getResultList();
 
             session.getTransaction().commit();
+        } catch (Exception e) {
+            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
+            }
+
+            e.printStackTrace();
         }
 
         return accounts;

@@ -7,9 +7,14 @@ import java.util.Optional;
 
 public interface AccountDAO {
     void saveAccount(Account account);
+
     List<Account> getAccountsByClientId(long clientId);
+
     List<Account> getAccounts();
+
     Optional<Account> getAccountByAccountNumber(String accountNumber);
+
     Optional<Account> getAccountByAccountId(long accountId);
+    
     void updateAccount(Account account);
 }

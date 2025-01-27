@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface TransactionDAO {
     List<TransactionHistory> getTransactionHistory();
+
     void saveTransaction(TransactionHistory transactionHistory);
 }

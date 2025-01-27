@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Daily_loan_debts")
+@Table(name = "daily_loan_payment_debts")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,5 +22,7 @@ public class DailyLoanPaymentDebt {
 
     private double dailyInterestAmount;
 
-    private long loanId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "loan_id", referencedColumnName = "id")
+    private Loan loan;
 }

@@ -7,7 +7,10 @@ import java.util.Optional;
 
 public interface LoanDAO {
     void saveLoan(Loan loan);
+
     List<Loan> getLoans();
+
     Optional<Loan> getLoanByLoanId(long loanId);
+
     void update(Loan loan);
 }

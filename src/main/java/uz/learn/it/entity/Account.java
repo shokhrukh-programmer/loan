@@ -24,5 +24,7 @@ public class Account {
 
     private double balance;
 
-    private long clientId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    private Client client;
 }
