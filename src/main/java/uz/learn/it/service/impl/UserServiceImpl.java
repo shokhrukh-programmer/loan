@@ -11,6 +11,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     @Override
     public List<UserCredentials> getUserCredentials() {
-        return Storage.userCredentials;
+        return Storage.getUserCredentials();
     }
 }

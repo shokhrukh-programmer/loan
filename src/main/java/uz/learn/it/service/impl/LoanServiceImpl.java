@@ -45,12 +45,12 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<Loan> getLoans() {
-        return Storage.loans;
+        return Storage.getLoans();
     }
 
     @Override
     public void calculateAndWriteInterest() {
-        List<Loan> loanList = Storage.loans;
+        List<Loan> loanList = Storage.getLoans();
 
         double dailyInterest;
 

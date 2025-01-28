@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> getAccounts() {
-        return Storage.accounts;
+        return Storage.getAccounts();
     }
 
     private void checkForAccountAlreadyExistence(Long clientId, String accountType) {

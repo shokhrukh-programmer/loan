@@ -36,7 +36,7 @@ public class AccountController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{accountId:[0-9]+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{accountId:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<Account>>> getAccountById(
             @PathVariable("accountId") Long accountId) {
         APIResponseDTO<List<Account>> apiResponseDTO = new APIResponseDTO<>();

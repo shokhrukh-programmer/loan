@@ -6,11 +6,11 @@ import java.security.SecureRandom;
 
 public class PasswordGenerator {
     public static String generatePassword() {
-        String allChars =
-                Constants.UPPER_CASE +
-                Constants.LOWER_CASE +
-                Constants.DIGITS +
-                Constants.SPECIAL_CHARS;
+        String allChars = String.format("%s%s%s%s",
+                Constants.UPPER_CASE,
+                Constants.LOWER_CASE,
+                Constants.DIGITS,
+                Constants.SPECIAL_CHARS);
 
         // Use SecureRandom for strong randomness
         SecureRandom random = new SecureRandom();

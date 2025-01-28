@@ -19,7 +19,7 @@ import java.util.List;
 public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionHistory> getOperationHistory() {
-        return Storage.operationHistories;
+        return Storage.getOperationHistories();
     }
 
     @Override

@@ -38,23 +38,23 @@ public class ClientServiceImpl implements ClientService {
     public void updateClientById(long id, ClientModificationRequestDTO tempClient) {
         Client client = getClientById(id);
 
-        if(isNotNullAndBlank(tempClient.getFirstName())) {
+        if (isNotNullAndBlank(tempClient.getFirstName())) {
             client.setFirstName(tempClient.getFirstName());
         }
 
-        if(isNotNullAndBlank(tempClient.getLastName())) {
+        if (isNotNullAndBlank(tempClient.getLastName())) {
             client.setLastName(tempClient.getLastName());
         }
 
-        if(isNotNullAndBlank(tempClient.getPassportInfo())) {
+        if (isNotNullAndBlank(tempClient.getPassportInfo())) {
             client.setPassportInfo(tempClient.getPassportInfo());
         }
 
-        if(isNotNullAndBlank(tempClient.getPhoneNumber())) {
+        if (isNotNullAndBlank(tempClient.getPhoneNumber())) {
             client.setPhoneNumber(tempClient.getPhoneNumber());
         }
 
-        if(isNotNullAndBlank(tempClient.getRole())) {
+        if (isNotNullAndBlank(tempClient.getRole())) {
             client.setRole(tempClient.getRole());
         }
     }
@@ -65,17 +65,17 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<Client> getClients() {
-        return Storage.clients;
+        return Storage.getClients();
     }
 
     @Override
     public Client getClientById(long clientId) {
         return Storage.findClientById(clientId)
-                        .orElseThrow(() -> new NotFoundException(Constants.CLIENT_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(Constants.CLIENT_NOT_FOUND_MESSAGE));
     }
 
     private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
-        boolean clientExists = Storage.clients.stream()
+        boolean clientExists = Storage.getClients().stream()
                 .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
 
         if (clientExists) {

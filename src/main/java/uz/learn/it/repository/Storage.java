@@ -14,41 +14,66 @@ public class Storage {
     private static long loanId = 1;
     private static long historyId = 1;
     private static long paymentId = 1;
-    public static final List<Client> clients = new ArrayList<>();
-    public static final List<Account> accounts = new ArrayList<>();
-    public static final List<UserCredentials> userCredentials = new ArrayList<>();
-    public static final List<TransactionHistory> operationHistories = new ArrayList<>();
-    public static final List<Loan> loans = new ArrayList<>();
-    public static final List<DailyLoanPaymentDebt> dailyLoanPaymentDebtList = new ArrayList<>();
+    private static final List<Client> clients = new ArrayList<>();
+    private static final List<Account> accounts = new ArrayList<>();
+    private static final List<UserCredentials> userCredentials = new ArrayList<>();
+    private static final List<TransactionHistory> operationHistories = new ArrayList<>();
+    private static final List<Loan> loans = new ArrayList<>();
+    private static final List<DailyLoanPaymentDebt> dailyLoanPaymentDebtList = new ArrayList<>();
 
-    public static void addClient(Client client) {
+    public static List<UserCredentials> getUserCredentials() {
+        return List.copyOf(userCredentials);
+    }
+
+    public static List<Client> getClients() {
+        return List.copyOf(clients);
+    }
+
+    public static List<Account> getAccounts() {
+        return List.copyOf(accounts);
+    }
+
+    public static List<TransactionHistory> getOperationHistories() {
+        return List.copyOf(operationHistories);
+    }
+
+    public static List<Loan> getLoans() {
+        return List.copyOf(loans);
+    }
+
+    public static List<DailyLoanPaymentDebt> getDailyLoanPaymentDebtList() {
+        return List.copyOf(dailyLoanPaymentDebtList);
+    }
+
+
+    public static boolean addClient(Client client) {
         client.setId(clientId++);
-        clients.add(client);
+        return clients.add(client);
     }
 
-    public static void addAccount(Account account) {
+    public static boolean addAccount(Account account) {
         account.setId(accountId++);
-        accounts.add(account);
+        return accounts.add(account);
     }
 
-    public static void addUserLoginDetails(UserCredentials userCredential) {
+    public static boolean addUserLoginDetails(UserCredentials userCredential) {
         userCredential.setId(userCredentialId++);
-        userCredentials.add(userCredential);
+        return userCredentials.add(userCredential);
     }
 
-    public static void addOperationToHistory(TransactionHistory transactionHistory) {
+    public static boolean addOperationToHistory(TransactionHistory transactionHistory) {
         transactionHistory.setId(historyId++);
-        operationHistories.add(transactionHistory);
+        return operationHistories.add(transactionHistory);
     }
 
-    public static void addLoan(Loan loan) {
+    public static boolean addLoan(Loan loan) {
         loan.setId(loanId++);
-        loans.add(loan);
+        return loans.add(loan);
     }
 
-    public static void addToPaymentTable(DailyLoanPaymentDebt dailyLoanPaymentDebt) {
+    public static boolean addToPaymentTable(DailyLoanPaymentDebt dailyLoanPaymentDebt) {
         dailyLoanPaymentDebt.setId(paymentId++);
-        dailyLoanPaymentDebtList.add(dailyLoanPaymentDebt);
+        return dailyLoanPaymentDebtList.add(dailyLoanPaymentDebt);
     }
 
     public static Optional<Client> findClientById(Long clientId) {

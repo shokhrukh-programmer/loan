@@ -35,10 +35,10 @@ public class LoanController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{loanId:[0-9]+}/daily-loan-debt",
+    @GetMapping(value = "/{loanId:\\d+}/daily-loan-debt",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentDebt>>> getDailyInterest(
-            @PathVariable("loanId") int loanId) {
+            @PathVariable("loanId") long loanId) {
         APIResponseDTO<List<DailyLoanPaymentDebt>> apiResponseDTO = new APIResponseDTO<>();
 
         apiResponseDTO.setData(loanService.getDailyPaymentsById(loanId));
@@ -58,9 +58,9 @@ public class LoanController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{loanId:[0-9]+}/payments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{loanId:\\d+}/payments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<String>> doPaymentToLoan(
-            @PathVariable("loanId") int loanId, @Valid @RequestBody LoanPaymentRequestDTO loan) {
+            @PathVariable("loanId") long loanId, @Valid @RequestBody LoanPaymentRequestDTO loan) {
         loanService.payForLoanDebt(loanId, loan);
 
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();
