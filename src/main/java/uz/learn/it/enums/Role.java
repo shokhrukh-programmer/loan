@@ -1,5 +1,5 @@
 package uz.learn.it.enums;
 
 public enum Role {
-    USER, MANAGER;
+    ROLE_USER, ROLE_MANAGER
 }

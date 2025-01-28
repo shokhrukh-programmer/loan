@@ -22,7 +22,4 @@ public class ClientRegistrationRequestDTO {
 
     @Pattern(regexp = "^\\+998\\d{9}$", message = "Phone number should start with +998 and contain 13 digits")
     private String phoneNumber;
-
-    @Pattern(regexp = "^CLIENT|MANAGER$", message = "Roles' list: MANAGER, CLIENT")
-    private String role;
 }

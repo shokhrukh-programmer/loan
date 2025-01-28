@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
 import uz.learn.it.entity.Account;
@@ -24,6 +25,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @GetMapping
     public ResponseEntity<APIResponseDTO<List<Account>>> getAccounts() {
         APIResponseDTO<List<Account>> apiResponseDTO = new APIResponseDTO<>();

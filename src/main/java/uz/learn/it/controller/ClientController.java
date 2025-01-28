@@ -36,20 +36,6 @@ public class ClientController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<APIResponseDTO<ClientRegistrationResponseDTO>> registerClient(
-             @RequestBody @Valid ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
-        APIResponseDTO<ClientRegistrationResponseDTO> apiResponseDTO = new APIResponseDTO<>();
-
-        apiResponseDTO.setMessage(Constants.CLIENT_REGISTERED_SUCCESSFULLY_MESSAGE);
-
-        apiResponseDTO.setData(
-                clientService.registerClient(clientRegistrationRequestDTO)
-        );
-
-        return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
-    }
-
     @PutMapping(value = "{clientId:\\d+}")
     public ResponseEntity<APIResponseDTO<String>> updateClient(
             @PathVariable long clientId, @RequestBody @Valid ClientModificationRequestDTO client) {
