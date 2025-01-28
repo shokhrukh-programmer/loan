@@ -50,7 +50,7 @@ public class ClientController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PutMapping(value = "{clientId:[0-9]+}")
+    @PutMapping(value = "{clientId:\\d+}")
     public ResponseEntity<APIResponseDTO<String>> updateClient(
             @PathVariable long clientId, @RequestBody @Valid ClientModificationRequestDTO client) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>();

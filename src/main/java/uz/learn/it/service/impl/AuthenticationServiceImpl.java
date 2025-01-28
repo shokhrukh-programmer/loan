@@ -19,8 +19,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserDAO userDAO;
+
     private final PasswordEncoder passwordEncoder;
+
     private final JwtService jwtService;
+
     private final AuthenticationManager authenticationManager;
 
     @Override

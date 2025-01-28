@@ -6,5 +6,6 @@ import uz.learn.it.dto.response.AuthenticationResponse;
 
 public interface AuthenticationService {
     AuthenticationResponse signUp(SignUpRequest request);
+
     AuthenticationResponse signIn(SignInRequest request);
 }

@@ -3,7 +3,6 @@ package uz.learn.it.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
@@ -33,7 +32,7 @@ public class TransactionController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{accountId:[0-9]+}")
+    @PostMapping(value = "/{accountId:\\d+}")
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
             @PathVariable long accountId,
             @RequestBody @Valid AccountTransactionRequestDTO accountTransactionRequestDTO) {

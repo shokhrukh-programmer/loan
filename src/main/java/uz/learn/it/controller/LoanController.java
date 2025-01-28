@@ -3,7 +3,6 @@ package uz.learn.it.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constant.Constants;
@@ -35,7 +34,7 @@ public class LoanController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{loanId:[0-9]+}/daily-loan-debt")
+    @GetMapping(value = "/{loanId:\\d+}/daily-loan-debt")
     public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentDebt>>> getDailyInterest(
             @PathVariable long loanId) {
         APIResponseDTO<List<DailyLoanPaymentDebt>> apiResponseDTO = new APIResponseDTO<>();
@@ -57,7 +56,7 @@ public class LoanController {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{loanId:[0-9]+}/payments")
+    @PostMapping(value = "/{loanId:\\d+}/payments")
     public ResponseEntity<APIResponseDTO<String>> doPaymentToLoan(
             @PathVariable long loanId, @RequestBody @Valid LoanPaymentRequestDTO loan) {
         loanService.payForLoanDebt(loanId, loan);
