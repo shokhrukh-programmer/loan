@@ -1,6 +1,6 @@
 package uz.learn.it.helper;
 
-import uz.learn.it.constant.Constants;
+import uz.learn.it.constants.AccountConstants;
 
 import java.util.Random;
 
@@ -9,14 +9,14 @@ public class AccountNumberGenerator {
 
     public static String generateAccountNumber() {
         // Generate the remaining 18 digits as a string
-        StringBuilder number = new StringBuilder(Constants.ACCOUNT_NUMBER_PREFIX);
+        StringBuilder number = new StringBuilder(AccountConstants.ACCOUNT_NUMBER_PREFIX);
 
         return getGeneratedNumber(number);
     }
 
     public static String generateDepositNumber() {
         // Generate the remaining 18 digits as a string
-        StringBuilder number = new StringBuilder(Constants.DEPOSIT_NUMBER_PREFIX);
+        StringBuilder number = new StringBuilder(AccountConstants.DEPOSIT_NUMBER_PREFIX);
 
         return getGeneratedNumber(number);
     }

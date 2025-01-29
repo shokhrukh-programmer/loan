@@ -1,19 +1,26 @@
 package uz.learn.it.dto.response;
 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import uz.learn.it.constants.RequestCodeConstants;
+import uz.learn.it.constants.SuccessfulMessageConstants;
 
 @Data
 @AllArgsConstructor
+@XmlRootElement
+@Builder
 public class APIResponseDTO<T> {
-    private int code;
+    @XmlElement
+    @Builder.Default
+    private int code = RequestCodeConstants.SUCCESSFUL_CODE;
 
-    private String message;
+    @XmlElement
+    @Builder.Default
+    private String message = SuccessfulMessageConstants.OK;
 
+    @XmlElement
     private T data;
-
-    public APIResponseDTO() {
-        this.code = 200;
-        this.message = "OK";
-    }
 }

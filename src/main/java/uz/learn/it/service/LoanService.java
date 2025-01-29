@@ -4,6 +4,7 @@ import uz.learn.it.entity.DailyLoanPaymentDebt;
 import uz.learn.it.entity.Loan;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
+import uz.learn.it.entity.LoanPaymentHistory;
 
 import java.util.List;
 
@@ -12,9 +13,13 @@ public interface LoanService {
 
     void createLoan(LoanCreationRequestDTO loan);
 
-    void calculateAndWriteInterest();
+    void calculateInterest();
 
     List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId);
 
     void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails);
+
+    List<LoanPaymentHistory> getLoanPaymentHistory();
+
+    List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId);
 }
