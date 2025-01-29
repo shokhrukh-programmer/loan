@@ -2,7 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
+import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
 import uz.learn.it.enums.AccountType;
@@ -66,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
         if (accounts != null) {
             for(Account a : accounts) {
                 if(a.getAccountType().equals(accountType)) {
-                    throw new AlreadyExistException(String.format(Constants.ACCOUNT_EXIST_MESSAGE,
+                    throw new AlreadyExistException(String.format(ExceptionMessageConstants.ACCOUNT_EXIST_MESSAGE,
                             accountType, clientId));
                 }
             }

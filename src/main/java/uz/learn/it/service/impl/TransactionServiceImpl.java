@@ -2,12 +2,12 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
+import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
-import uz.learn.it.enums.PaymentType;
 import uz.learn.it.entity.TransactionHistory;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
+import uz.learn.it.enums.PaymentTypeForTransaction;
 import uz.learn.it.exception.ValidationException;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
@@ -70,7 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
     private StringBuilder getOperationByType(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
         StringBuilder operation = new StringBuilder();
 
-        if(accountTransactionRequestDTO.getType().equals(PaymentType.TOP_UP.name())) {
+        if(accountTransactionRequestDTO.getType().equals(PaymentTypeForTransaction.TOP_UP.name())) {
             account.setBalance(account.getBalance() + accountTransactionRequestDTO.getAmountToTopUpAndWithdraw());
             operation.append("+ ");
         } else {
@@ -87,7 +87,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private void checkBalanceToWithdraw(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
         if(account.getBalance() - accountTransactionRequestDTO.getAmountToTopUpAndWithdraw() < 0) {
-            throw new ValidationException(Constants.BALANCE_NOT_VALID_MESSAGE);
+            throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
     }
 }

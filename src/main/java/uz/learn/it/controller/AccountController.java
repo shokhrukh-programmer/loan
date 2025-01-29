@@ -25,7 +25,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<Account>>> getAccounts() {
         return new ResponseEntity<>(
             APIResponseDTO.<List<Account>>builder()

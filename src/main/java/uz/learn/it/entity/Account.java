@@ -1,9 +1,11 @@
 package uz.learn.it.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.learn.it.helper.CustomDoubleSerializer;
 
 import javax.persistence.*;
 
@@ -22,6 +24,7 @@ public class Account {
 
     private String accountNumber;
 
+    @JsonSerialize(using = CustomDoubleSerializer.class)
     private double balance;
 
     @ManyToOne(fetch = FetchType.EAGER)

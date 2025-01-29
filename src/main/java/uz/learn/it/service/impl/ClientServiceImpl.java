@@ -2,7 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
+import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.entity.Client;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
@@ -59,7 +59,7 @@ public class ClientServiceImpl implements ClientService {
                 .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
 
         if (clientExists) {
-            throw new AlreadyExistException(Constants.CLIENT_ALREADY_EXIST_MESSAGE);
+            throw new AlreadyExistException(ExceptionMessageConstants.CLIENT_ALREADY_EXIST_MESSAGE);
         }
     }
 

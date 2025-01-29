@@ -2,12 +2,13 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
-import uz.learn.it.enums.PaymentType;
+import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.entity.*;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
+import uz.learn.it.enums.PaymentTypeForLoan;
+import uz.learn.it.enums.PaymentTypeForTransaction;
 import uz.learn.it.exception.ValidationException;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
@@ -72,7 +73,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public void calculateAndWriteInterest() {
+    public void calculateInterest() {
         List<Loan> loanList = loanDAO.getLoans();
 
         double dailyInterest;
@@ -108,10 +109,10 @@ public class LoanServiceImpl implements LoanService {
         Loan loan = loanDAO.getLoanByLoanId(loanId).orElseThrow(LoanNotFoundException::new);
 
         Account account = accountDAO.getAccountByAccountNumber(loanDetails.getAccountNumber())
-                .orElseThrow(() -> new AccountNotFoundException(Constants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
+                .orElseThrow(() -> new AccountNotFoundException(ExceptionMessageConstants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
 
         if(loanDetails.getPaymentAmount() > account.getBalance()) {
-            throw new ValidationException(Constants.BALANCE_NOT_VALID_MESSAGE);
+            throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
 
         doTransactionFromBalance(loanDetails, account);
@@ -119,27 +120,52 @@ public class LoanServiceImpl implements LoanService {
         payForLoan(loanDetails, loan);
     }
 
+    @Override
+    public List<LoanPaymentHistory> getLoanPaymentHistory() {
+        return loanDAO.getLoanPaymentHistory();
+    }
+
+    @Override
+    public List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId) {
+        return loanDAO.getLoanPaymentHistoryByLoanId(loanId);
+    }
+
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
-        if(loanDetails.getPaymentType().equals(PaymentType.INTEREST.name())) {
+        LoanPaymentHistory loanPaymentHistory = null;
+        if(loanDetails.getPaymentType().equals(PaymentTypeForLoan.INTEREST.name())) {
             double debt = loan.getDebt();
 
             if(debt > loanDetails.getPaymentAmount()) {
                 loan.setDebt(debt - loanDetails.getPaymentAmount());
+                loanPaymentHistory = LoanPaymentHistory.builder()
+                        .amount(loanDetails.getPaymentAmount())
+                        .interestPayment(loanDetails.getPaymentAmount())
+                        .date(DateFormatter.dateFormatter(new Date()))
+                        .loan(loan)
+                        .build();
             } else {
                 loan.setDebt(0.0);
                 loan.setBalance(loan.getBalance() - (loanDetails.getPaymentAmount() - debt));
+                loanPaymentHistory = LoanPaymentHistory.builder()
+                        .amount(loanDetails.getPaymentAmount())
+                        .interestPayment(debt)
+                        .mainPayment(loanDetails.getPaymentAmount() - debt)
+                        .date(DateFormatter.dateFormatter(new Date()))
+                        .loan(loan)
+                        .build();
             }
         } else {
             loan.setBalance(loan.getBalance() - loanDetails.getPaymentAmount());
         }
 
         loanDAO.update(loan);
+        loanDAO.saveLoanPaymentHistory(loanPaymentHistory);
     }
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {
         AccountTransactionRequestDTO accountTransactionRequestDTO = new AccountTransactionRequestDTO();
 
-        accountTransactionRequestDTO.setType(PaymentType.WITHDRAW.name());
+        accountTransactionRequestDTO.setType(PaymentTypeForTransaction.WITHDRAW.name());
 
         accountTransactionRequestDTO.setAmountToTopUpAndWithdraw(loanDetails.getPaymentAmount());
 

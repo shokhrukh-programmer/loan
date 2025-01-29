@@ -5,8 +5,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Loan;
+import uz.learn.it.entity.LoanPaymentHistory;
 import uz.learn.it.repository.LoanDAO;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +82,43 @@ public class LoanDAOImpl implements LoanDAO {
     }
 
     @Override
+    public List<LoanPaymentHistory> getLoanPaymentHistory() {
+        List<LoanPaymentHistory> loanPaymentHistory = null;
+
+        try(Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            loanPaymentHistory = session.createQuery("from LoanPaymentHistory", LoanPaymentHistory.class)
+                    .getResultList();
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
+            }
+        }
+
+        return loanPaymentHistory;
+    }
+
+    @Override
+    public List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId) {
+        List<LoanPaymentHistory> loanPaymentHistory = null;
+
+        try(Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            loanPaymentHistory = session.createQuery("from LoanPaymentHistory l where loan.id =: loanId", LoanPaymentHistory.class)
+                    .setParameter("loanId", loanId)
+                    .getResultList();
+            session.getTransaction().commit();
+        } catch(Exception e) {
+            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
+            }
+        }
+
+        return loanPaymentHistory;
+    }
+
+    @Override
     public void update(Loan loan) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
@@ -89,6 +128,21 @@ public class LoanDAOImpl implements LoanDAO {
 
             session.getTransaction().commit();// Only modified fields are updated
         } catch (Exception e) {
+            if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
+            }
+
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void saveLoanPaymentHistory(LoanPaymentHistory loanPaymentHistory) {
+        try(Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.save(loanPaymentHistory);
+            session.getTransaction().commit();
+        } catch(Exception e) {
             if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
                 sessionFactory.getCurrentSession().getTransaction().rollback();
             }

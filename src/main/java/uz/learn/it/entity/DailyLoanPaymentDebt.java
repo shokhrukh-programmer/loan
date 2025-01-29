@@ -1,9 +1,11 @@
 package uz.learn.it.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.learn.it.helper.CustomDoubleSerializer;
 
 import javax.persistence.*;
 
@@ -20,6 +22,7 @@ public class DailyLoanPaymentDebt {
 
     private String date;
 
+    @JsonSerialize(using = CustomDoubleSerializer.class)
     private double dailyInterestAmount;
 
     @ManyToOne(fetch = FetchType.EAGER)

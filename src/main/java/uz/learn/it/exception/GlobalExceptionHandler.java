@@ -1,5 +1,6 @@
 package uz.learn.it.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistException.class)
@@ -21,8 +23,7 @@ public class GlobalExceptionHandler {
         APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE, ex.getMessage(),
                 null);
 
-
-        //log.error(ex.getMessage());
+        log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
     }
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
             if (processedFields.add(error.getField())) {
                 errors.add(error.getDefaultMessage());
 
-            //    log.error(error.getDefaultMessage());
+                log.error(error.getDefaultMessage());
             }
         }
 
@@ -52,7 +53,7 @@ public class GlobalExceptionHandler {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.NOT_FOUND_CODE,
                 ex.getMessage(), null);
 
-        //log.error(ex.getMessage());
+        log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.NOT_FOUND);
     }
@@ -62,7 +63,7 @@ public class GlobalExceptionHandler {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
                 ex.getMessage(), null);
 
-        //log.error(ex.getMessage());
+        log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.BAD_REQUEST);
     }

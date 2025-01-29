@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserCredentialDAO userCredentialDAO, ClientDAO clientDAO) {
         this.userCredentialDAO = userCredentialDAO;
+
         this.clientDAO = clientDAO;
     }
 
