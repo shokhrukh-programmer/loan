@@ -2,11 +2,16 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.*;
+import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
+import uz.learn.it.entity.Account;
+import uz.learn.it.entity.DailyLoanPaymentDebt;
+import uz.learn.it.entity.Loan;
+import uz.learn.it.entity.LoanPaymentHistory;
+import uz.learn.it.enums.PaymentTypeForLoan;
+import uz.learn.it.enums.PaymentTypeForTransaction;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.exception.notfound.LoanNotFoundException;
 import uz.learn.it.exception.ValidationException;
@@ -17,6 +22,7 @@ import uz.learn.it.service.TransactionService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -29,7 +35,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public void createLoan(LoanCreationRequestDTO loanRequest) {
-        checkClientExistence(loanRequest);
+        validateClientExistence(loanRequest);
 
         Loan loan = Loan.builder()
                 .createdDate(DateFormatter.dateFormatter(new Date()))
@@ -49,7 +55,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public void calculateAndWriteInterest() {
+    public void calculateInterest() {
         List<Loan> loanList = Storage.getLoans();
 
         double dailyInterest;
@@ -74,7 +80,7 @@ public class LoanServiceImpl implements LoanService {
         return Storage.getDailyPaymentsById(loanId);
     }
 
-    private void checkClientExistence(LoanCreationRequestDTO loanRequest) {
+    private void validateClientExistence(LoanCreationRequestDTO loanRequest) {
         Storage.findClientById(loanRequest.getClientId())
                 .orElseThrow(ClientNotFoundException::new);
     }
@@ -86,7 +92,7 @@ public class LoanServiceImpl implements LoanService {
         Account account = getAccountByAccountNumber(loanDetails.getAccountNumber());
 
         if(loanDetails.getPaymentAmount() > account.getBalance()) {
-            throw new ValidationException(Constants.BALANCE_NOT_VALID_MESSAGE);
+            throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
 
         doTransactionFromBalance(loanDetails, account);
@@ -95,12 +101,29 @@ public class LoanServiceImpl implements LoanService {
     }
 
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
-        if(loanDetails.getPaymentType().equals(PaymentType.INTEREST.name())) {
+        if(loanDetails.getPaymentType().equals(PaymentTypeForLoan.INTEREST.name())) {
             double debt = loan.getDebt();
 
             if(debt > loanDetails.getPaymentAmount()) {
                 loan.setDebt(debt - loanDetails.getPaymentAmount());
+                Storage.addLoanPayment(
+                        LoanPaymentHistory.builder()
+                                .amount(loanDetails.getPaymentAmount())
+                                .interestPayment(loanDetails.getPaymentAmount())
+                                .mainPayment(0.0)
+                                .date(DateFormatter.dateFormatter(new Date()))
+                                .loanId(loan.getId())
+                                .build());
+
             } else {
+                Storage.addLoanPayment(
+                        LoanPaymentHistory.builder()
+                                .amount(loanDetails.getPaymentAmount())
+                                .interestPayment(loan.getDebt())
+                                .mainPayment(loanDetails.getPaymentAmount() - loan.getDebt())
+                                .date(DateFormatter.dateFormatter(new Date()))
+                                .loanId(loan.getId())
+                                .build());
                 loan.setDebt(0.0);
                 loan.setBalance(loan.getBalance() - (loanDetails.getPaymentAmount() - debt));
             }
@@ -116,16 +139,25 @@ public class LoanServiceImpl implements LoanService {
 
     private Account getAccountByAccountNumber(String accountNumber) {
         return Storage.findAccountByAccountNumber(accountNumber)
-                .orElseThrow(() -> new ValidationException(Constants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
+                .orElseThrow(() -> new ValidationException(ExceptionMessageConstants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
     }
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {
         AccountTransactionRequestDTO accountTransactionRequestDTO = new AccountTransactionRequestDTO();
 
-        accountTransactionRequestDTO.setType(PaymentType.WITHDRAW.name());
+        accountTransactionRequestDTO.setType(PaymentTypeForTransaction.WITHDRAW.name());
 
         accountTransactionRequestDTO.setAmountToTopUpAndWithdraw(loanDetails.getPaymentAmount());
 
         transactionService.makeTransaction(account.getId(), accountTransactionRequestDTO);
+    }
+
+    public List<LoanPaymentHistory> getLoanPaymentHistory() {
+        return Storage.getLoanPaymentHistoryList();
+    }
+
+    public List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId) {
+        return Storage.getLoanPaymentHistoryList().stream().filter(l -> l.getLoanId() == loanId)
+                .collect(Collectors.toList());
     }
 }

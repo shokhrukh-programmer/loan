@@ -1,6 +1,6 @@
 package uz.learn.it.repository;
 
-import uz.learn.it.dto.*;
+import uz.learn.it.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +14,14 @@ public class Storage {
     private static long loanId = 1;
     private static long historyId = 1;
     private static long paymentId = 1;
+    private static long loanPaymentId = 1;
     private static final List<Client> clients = new ArrayList<>();
     private static final List<Account> accounts = new ArrayList<>();
     private static final List<UserCredentials> userCredentials = new ArrayList<>();
     private static final List<TransactionHistory> operationHistories = new ArrayList<>();
     private static final List<Loan> loans = new ArrayList<>();
     private static final List<DailyLoanPaymentDebt> dailyLoanPaymentDebtList = new ArrayList<>();
+    private static final List<LoanPaymentHistory> loanPaymentHistoryList = new ArrayList<>();
 
     public static List<UserCredentials> getUserCredentials() {
         return List.copyOf(userCredentials);
@@ -41,14 +43,18 @@ public class Storage {
         return List.copyOf(loans);
     }
 
-    public static List<DailyLoanPaymentDebt> getDailyLoanPaymentDebtList() {
-        return List.copyOf(dailyLoanPaymentDebtList);
+    public static List<LoanPaymentHistory> getLoanPaymentHistoryList() {
+        return List.copyOf(loanPaymentHistoryList);
     }
-
 
     public static boolean addClient(Client client) {
         client.setId(clientId++);
         return clients.add(client);
+    }
+
+    public static boolean addLoanPayment(LoanPaymentHistory loanPaymentHistory) {
+        loanPaymentHistory.setId(loanPaymentId++);
+        return loanPaymentHistoryList.add(loanPaymentHistory);
     }
 
     public static boolean addAccount(Account account) {

@@ -1,6 +1,6 @@
 package uz.learn.it.helper;
 
-import uz.learn.it.constant.Constants;
+import uz.learn.it.constants.Constants;
 
 import java.security.SecureRandom;
 

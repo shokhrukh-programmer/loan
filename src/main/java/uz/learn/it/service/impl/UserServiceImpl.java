@@ -1,7 +1,7 @@
 package uz.learn.it.service.impl;
 
 import org.springframework.stereotype.Service;
-import uz.learn.it.dto.UserCredentials;
+import uz.learn.it.entity.UserCredentials;
 import uz.learn.it.repository.Storage;
 import uz.learn.it.service.UserService;
 

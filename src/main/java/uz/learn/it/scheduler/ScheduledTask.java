@@ -17,6 +17,6 @@ public class ScheduledTask {
     //@Scheduled(cron = "0 0 0 * * ?") // Runs at midnight daily
     @Scheduled(cron = "*/5 * * * * ?")
     public void writeDailyInterest() {
-        loanService.calculateAndWriteInterest();
+        loanService.calculateInterest();
     }
 }

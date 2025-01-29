@@ -1,9 +1,9 @@
 package uz.learn.it.service.impl;
 
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Client;
-import uz.learn.it.dto.UserCredentials;
+import uz.learn.it.constants.ExceptionMessageConstants;
+import uz.learn.it.entity.Client;
+import uz.learn.it.entity.UserCredentials;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
     @Override
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
-        checkForClientExistence(tempClient);
+        validateClientExistence(tempClient);
 
         Client client = Client.builder()
                 .firstName(tempClient.getFirstName())
@@ -71,15 +71,15 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client getClientById(long clientId) {
         return Storage.findClientById(clientId)
-                .orElseThrow(() -> new NotFoundException(Constants.CLIENT_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessageConstants.CLIENT_NOT_FOUND_MESSAGE));
     }
 
-    private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
+    private void validateClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
         boolean clientExists = Storage.getClients().stream()
                 .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
 
         if (clientExists) {
-            throw new AlreadyExistException(Constants.CLIENT_ALREADY_EXIST_MESSAGE);
+            throw new AlreadyExistException(ExceptionMessageConstants.CLIENT_ALREADY_EXIST_MESSAGE);
         }
     }
 

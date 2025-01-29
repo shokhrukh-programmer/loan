@@ -3,7 +3,7 @@ package uz.learn.it.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uz.learn.it.dto.AccountType;
+import uz.learn.it.enums.AccountType;
 
 @Data
 @AllArgsConstructor

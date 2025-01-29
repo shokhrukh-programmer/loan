@@ -1,9 +1,9 @@
 package uz.learn.it.service.impl;
 
 import org.springframework.stereotype.Service;
-import uz.learn.it.constant.Constants;
-import uz.learn.it.dto.Account;
-import uz.learn.it.dto.AccountType;
+import uz.learn.it.constants.ExceptionMessageConstants;
+import uz.learn.it.entity.Account;
+import uz.learn.it.enums.AccountType;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.helper.AccountNumberGenerator;
@@ -20,7 +20,7 @@ public class AccountServiceImpl implements AccountService {
 
         long clientId = accountCreationRequestDTO.getClientId();
 
-        checkForAccountAlreadyExistence(clientId, accountType);
+        validateAccountExistence(clientId, accountType);
 
         Account account = Account.builder()
                 .accountType(accountType)
@@ -45,12 +45,12 @@ public class AccountServiceImpl implements AccountService {
         return Storage.getAccounts();
     }
 
-    private void checkForAccountAlreadyExistence(Long clientId, String accountType) {
+    private void validateAccountExistence(Long clientId, String accountType) {
         List<Account> accounts = getAccountsByClientId(clientId);
 
         for(Account a : accounts) {
             if(a.getAccountType().equals(accountType)) {
-                throw new AlreadyExistException(String.format(Constants.ACCOUNT_EXIST_MESSAGE,
+                throw new AlreadyExistException(String.format(ExceptionMessageConstants.ACCOUNT_EXIST_MESSAGE,
                         accountType, clientId));
             }
         }
