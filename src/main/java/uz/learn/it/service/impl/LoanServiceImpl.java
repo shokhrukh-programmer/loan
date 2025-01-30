@@ -91,13 +91,22 @@ public class LoanServiceImpl implements LoanService {
 
         Account account = getAccountByAccountNumber(loanDetails.getAccountNumber());
 
-        if(loanDetails.getPaymentAmount() > account.getBalance()) {
-            throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
-        }
+        validatePaymentAmount(loanDetails, account, loan);
 
         doTransactionFromBalance(loanDetails, account);
 
         payForLoan(loanDetails, loan);
+    }
+
+    private static void validatePaymentAmount(LoanPaymentRequestDTO loanDetails, Account account, Loan loan) {
+        if(loanDetails.getPaymentAmount() > account.getBalance()) {
+            throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
+        }
+
+        if(loanDetails.getPaymentAmount() > (loan.getDebt() + loan.getBalance())) {
+            throw new ValidationException(String.format(ExceptionMessageConstants.PAYMENT_AMOUNT_NOT_VALID_MESSAGE,
+                    (loan.getDebt() + loan.getBalance())));
+        }
     }
 
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {

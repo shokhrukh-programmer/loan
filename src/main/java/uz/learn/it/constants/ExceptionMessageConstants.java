@@ -14,4 +14,6 @@ public class ExceptionMessageConstants {
     public static final String ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER = "There is no account with this account number!";
 
     public static final String CLIENT_ALREADY_EXIST_MESSAGE = "Client is already exist!";
+
+    public static final String PAYMENT_AMOUNT_NOT_VALID_MESSAGE = "The max amount you can pay: %s";
 }
