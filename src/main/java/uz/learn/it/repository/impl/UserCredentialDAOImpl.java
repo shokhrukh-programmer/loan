@@ -20,24 +20,10 @@ public class UserCredentialDAOImpl implements UserCredentialDAO {
 
     @Override
     public List<UserCredential> findAll() {
-        List<UserCredential> userCredentials = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            userCredentials = session.createQuery("from UserCredential", UserCredential.class)
-                    .getResultList();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return userCredentials;
+        return session.createQuery("from UserCredential", UserCredential.class)
+                .getResultList();
     }
 
     @Override

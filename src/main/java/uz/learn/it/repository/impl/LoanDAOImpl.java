@@ -8,7 +8,6 @@ import uz.learn.it.entity.Loan;
 import uz.learn.it.entity.LoanPaymentHistory;
 import uz.learn.it.repository.LoanDAO;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,82 +39,36 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public List<Loan> getLoans() {
-        List<Loan> loans = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            loans = session.createQuery("from Loan", Loan.class)
-                    .getResultList();
-
-            session.getTransaction().commit();
-        } catch(Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return loans;
+        return session.createQuery("from Loan", Loan.class)
+                .getResultList();
     }
 
     @Override
     public Optional<Loan> getLoanByLoanId(long loanId) {
-        Loan loan = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            loan =  session.get(Loan.class, loanId);
-
-            session.getTransaction().commit();
-        } catch(Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        Loan loan = session.get(Loan.class, loanId);
 
         return Optional.ofNullable(loan);
     }
 
     @Override
     public List<LoanPaymentHistory> getLoanPaymentHistory() {
-        List<LoanPaymentHistory> loanPaymentHistory = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            loanPaymentHistory = session.createQuery("from LoanPaymentHistory", LoanPaymentHistory.class)
-                    .getResultList();
-            session.getTransaction().commit();
-        } catch(Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-        }
-
-        return loanPaymentHistory;
+        return session.createQuery("from LoanPaymentHistory", LoanPaymentHistory.class)
+                .getResultList();
     }
 
     @Override
     public List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId) {
-        List<LoanPaymentHistory> loanPaymentHistory = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            loanPaymentHistory = session.createQuery("from LoanPaymentHistory l where loan.id =: loanId", LoanPaymentHistory.class)
-                    .setParameter("loanId", loanId)
-                    .getResultList();
-            session.getTransaction().commit();
-        } catch(Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-        }
-
-        return loanPaymentHistory;
+        return session.createQuery("from LoanPaymentHistory l where loan.id =: loanId", LoanPaymentHistory.class)
+                .setParameter("loanId", loanId)
+                .getResultList();
     }
 
     @Override

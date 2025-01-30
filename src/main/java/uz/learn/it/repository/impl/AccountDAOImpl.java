@@ -2,7 +2,6 @@ package uz.learn.it.repository.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Account;
@@ -39,89 +38,36 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public List<Account> getAccountsByClientId(long clientId) {
-        List<Account> accounts = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            Query<Account> query = session.createQuery("from Account where client.id = :clientId", Account.class)
-                    .setParameter("clientId", clientId);
-
-            accounts = query.getResultList();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return accounts;
+        return session.createQuery("from Account where client.id = :clientId", Account.class)
+                    .setParameter("clientId", clientId)
+                .getResultList();
     }
 
     @Override
     public List<Account> getAccounts() {
-        List<Account> accounts = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            accounts = session.createQuery("from Account", Account.class).getResultList();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return accounts;
+        return session.createQuery("from Account", Account.class).getResultList();
     }
 
     @Override
     public Optional<Account> getAccountByAccountNumber(String accountNumber) {
-        Account account = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            account = session.createQuery("from Account where accountNumber = :accountNumber", Account.class)
-                    .setParameter("accountNumber", accountNumber)
-                    .getSingleResult();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        Account account = session.createQuery("from Account where accountNumber = :accountNumber", Account.class)
+                .setParameter("accountNumber", accountNumber)
+                .getSingleResult();;
 
         return Optional.ofNullable(account);
     }
 
     @Override
     public Optional<Account> getAccountByAccountId(long accountId) {
-        Account account = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            account = session.get(Account.class, accountId);
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        Account account = session.get(Account.class, accountId);
 
         return Optional.ofNullable(account);
     }

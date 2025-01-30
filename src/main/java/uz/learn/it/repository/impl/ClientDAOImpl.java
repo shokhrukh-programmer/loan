@@ -22,22 +22,9 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public List<Client> findAll() {
-        List<Client> clients = null;
+        Session session = sessionFactory.openSession();
 
-        try {
-            Session session = sessionFactory.openSession();
-            session.beginTransaction();
-            clients = session.createQuery("from Client", Client.class).getResultList();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return clients;
+        return session.createQuery("from Client", Client.class).getResultList();
     }
 
     @Override
@@ -59,23 +46,11 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public Optional<Client> getClientById(long clientId) {
-        Client client = null;
+        Session session = sessionFactory.openSession();
 
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            client = session.createQuery("from Client where id = :clientId", Client.class)
-                    .setParameter("clientId", clientId)
-                    .getSingleResult();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        Client client = session.createQuery("from Client where id = :clientId", Client.class)
+                .setParameter("clientId", clientId)
+                .getSingleResult();
 
         return Optional.ofNullable(client);
     }

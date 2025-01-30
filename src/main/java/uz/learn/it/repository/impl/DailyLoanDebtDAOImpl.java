@@ -35,25 +35,11 @@ public class DailyLoanDebtDAOImpl implements DailyLoanDebtDAO {
 
     @Override
     public List<DailyLoanPaymentDebt> getDailyLoanDebtsByLoanId(long loanId) {
-        List<DailyLoanPaymentDebt> dailyLoanPaymentDebts = null;
+        Session session = sessionFactory.openSession();
 
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            dailyLoanPaymentDebts = session.createQuery("from DailyLoanPaymentDebt where loan.id = :loanId",
-                    DailyLoanPaymentDebt.class)
-                    .setParameter("loanId", loanId)
-                    .getResultList();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return dailyLoanPaymentDebts;
+        return session.createQuery("from DailyLoanPaymentDebt where loan.id = :loanId",
+                        DailyLoanPaymentDebt.class)
+                .setParameter("loanId", loanId)
+                .getResultList();
     }
 }

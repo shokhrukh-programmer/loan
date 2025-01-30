@@ -20,24 +20,10 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public List<TransactionHistory> getTransactionHistory() {
-        List<TransactionHistory> transactionHistories = null;
+        Session session = sessionFactory.openSession();
 
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            transactionHistories = session.createQuery("from TransactionHistory", TransactionHistory.class)
-                    .getResultList();
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
-
-        return transactionHistories;
+        return session.createQuery("from TransactionHistory", TransactionHistory.class)
+                .getResultList();
     }
 
     @Override
