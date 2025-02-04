@@ -41,8 +41,6 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId) {
-//        Session session = sessionFactory.openSession();
-
         return entityManager.createQuery("from LoanPaymentHistory l where loan.id =: loanId", LoanPaymentHistory.class)
                 .setParameter("loanId", loanId)
                 .getResultList();

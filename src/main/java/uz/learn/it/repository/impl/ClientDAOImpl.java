@@ -27,8 +27,6 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public Optional<Client> getClientById(long clientId) {
-//        Session session = sessionFactory.openSession();
-
         Client client = entityManager.createQuery("from Client where id = :clientId", Client.class)
                 .setParameter("clientId", clientId)
                 .getSingleResult();

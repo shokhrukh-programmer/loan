@@ -20,8 +20,6 @@ public class DailyLoanDebtDAOImpl implements DailyLoanDebtDAO {
 
     @Override
     public List<DailyLoanPaymentDebt> getDailyLoanDebtsByLoanId(long loanId) {
-//        Session session = sessionFactory.openSession();
-
         return entityManager.createQuery("from DailyLoanPaymentDebt where loan.id = :loanId",
                         DailyLoanPaymentDebt.class)
                 .setParameter("loanId", loanId)
