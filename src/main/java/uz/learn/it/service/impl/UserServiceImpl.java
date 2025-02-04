@@ -2,6 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
 import uz.learn.it.entity.UserCredential;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ClientRegistrationResponseDTO saveUsernameAndPassword(String phoneNumber, long clientId) {
         String password = PasswordGenerator.generatePassword();
 

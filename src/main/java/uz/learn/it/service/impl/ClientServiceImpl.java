@@ -2,6 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.entity.Client;
@@ -28,6 +29,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
         checkForClientExistence(tempClient);
 
@@ -45,6 +47,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public void updateClientById(long clientId, ClientModificationRequestDTO client) {
         clientDAO.update(clientId, client);
     }

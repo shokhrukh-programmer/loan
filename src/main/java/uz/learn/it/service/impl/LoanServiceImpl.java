@@ -2,6 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.entity.*;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
@@ -52,6 +53,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public void createLoan(LoanCreationRequestDTO loanRequest) {
         Client client = checkClientExistence(loanRequest);
 
@@ -73,6 +75,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public void calculateInterest() {
         List<Loan> loanList = loanDAO.getLoans();
 
@@ -105,6 +108,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails) {
         Loan loan = loanDAO.getLoanByLoanId(loanId).orElseThrow(LoanNotFoundException::new);
 

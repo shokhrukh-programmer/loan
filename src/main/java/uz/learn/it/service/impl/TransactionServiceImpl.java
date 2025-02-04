@@ -2,6 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
@@ -43,6 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Transactional
     public void makeTransaction(long id, AccountTransactionRequestDTO accountTransactionRequestDTO) {
         Account account = getAccountByAccountId(id);
 

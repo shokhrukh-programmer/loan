@@ -1,8 +1,7 @@
 package uz.learn.it.repository.impl;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.UserCredential;
 import uz.learn.it.repository.UserCredentialDAO;
@@ -11,35 +10,17 @@ import java.util.List;
 
 @Repository
 public class UserCredentialDAOImpl implements UserCredentialDAO {
-    private final SessionFactory sessionFactory;
-
-    @Autowired
-    public UserCredentialDAOImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<UserCredential> findAll() {
-        Session session = sessionFactory.openSession();
-
-        return session.createQuery("from UserCredential", UserCredential.class)
+        return entityManager.createQuery("from UserCredential", UserCredential.class)
                 .getResultList();
     }
 
     @Override
     public void save(UserCredential userCredential) {
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            session.save(userCredential);
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        entityManager.persist(userCredential);
     }
 }

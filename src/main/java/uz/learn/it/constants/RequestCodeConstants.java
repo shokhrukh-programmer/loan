@@ -1,9 +1,11 @@
 package uz.learn.it.constants;
 
+import org.springframework.http.HttpStatus;
+
 public class RequestCodeConstants {
-    public static final int BAD_REQUEST_CODE = 400;
+    public static final int BAD_REQUEST_CODE = HttpStatus.BAD_REQUEST.value();
 
-    public static final int NOT_FOUND_CODE = 404;
+    public static final int NOT_FOUND_CODE = HttpStatus.NOT_FOUND.value();
 
-    public static final int SUCCESSFUL_CODE = 200;
+    public static final int SUCCESSFUL_CODE = HttpStatus.OK.value();
 }

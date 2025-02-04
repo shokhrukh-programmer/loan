@@ -1,8 +1,7 @@
 package uz.learn.it.repository.impl;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.entity.Client;
@@ -13,42 +12,24 @@ import java.util.Optional;
 
 @Repository
 public class ClientDAOImpl implements ClientDAO {
-    private final SessionFactory sessionFactory;
-
-    @Autowired
-    public ClientDAOImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Client> findAll() {
-        Session session = sessionFactory.openSession();
-
-        return session.createQuery("from Client", Client.class).getResultList();
+        return entityManager.createQuery("from Client", Client.class).getResultList();
     }
 
     @Override
     public void save(Client client) {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            session.saveOrUpdate(client);
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        entityManager.persist(client);
     }
 
     @Override
     public Optional<Client> getClientById(long clientId) {
-        Session session = sessionFactory.openSession();
+//        Session session = sessionFactory.openSession();
 
-        Client client = session.createQuery("from Client where id = :clientId", Client.class)
+        Client client = entityManager.createQuery("from Client where id = :clientId", Client.class)
                 .setParameter("clientId", clientId)
                 .getSingleResult();
 
@@ -57,45 +38,33 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public void update(long clientId, ClientModificationRequestDTO tempClient) {
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
+        Client client = entityManager.find(Client.class, clientId);
 
-            Client client = session.get(Client.class, clientId);
-
-            // Perform the merge
-            if (client != null) {
-                // Manually update only the required fields
-                if (tempClient.getFirstName() != null) {
-                    client.setFirstName(tempClient.getFirstName());
-                }
-
-                if (tempClient.getLastName() != null) {
-                    client.setLastName(tempClient.getLastName());
-                }
-
-                if (tempClient.getPassportInfo() != null) {
-                    client.setPassportInfo(tempClient.getPassportInfo());
-                }
-
-                if (tempClient.getPhoneNumber() != null) {
-                    client.setPhoneNumber(tempClient.getPhoneNumber());
-                }
-
-                if (tempClient.getRole() != null) {
-                    client.setRole(tempClient.getRole());
-                }
-
-                // Merge the entity to persist the changes
-                session.merge(client);
-
-                session.getTransaction().commit();// Only modified fields are updated
-            }
-        } catch (Exception e) {
-            if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
+        // Perform the merge
+        if (client != null) {
+            // Manually update only the required fields
+            if (tempClient.getFirstName() != null) {
+                client.setFirstName(tempClient.getFirstName());
             }
 
-            e.printStackTrace();
+            if (tempClient.getLastName() != null) {
+                client.setLastName(tempClient.getLastName());
+            }
+
+            if (tempClient.getPassportInfo() != null) {
+                client.setPassportInfo(tempClient.getPassportInfo());
+            }
+
+            if (tempClient.getPhoneNumber() != null) {
+                client.setPhoneNumber(tempClient.getPhoneNumber());
+            }
+
+            if (tempClient.getRole() != null) {
+                client.setRole(tempClient.getRole());
+            }
+
+            // Merge the entity to persist the changes
+            entityManager.merge(client);
         }
     }
 }

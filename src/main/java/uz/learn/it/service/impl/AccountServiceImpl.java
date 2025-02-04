@@ -2,6 +2,7 @@ package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
@@ -29,6 +30,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void createAccount(AccountCreationRequestDTO accountCreationRequestDTO) {
         String accountType = accountCreationRequestDTO.getAccountType();
 

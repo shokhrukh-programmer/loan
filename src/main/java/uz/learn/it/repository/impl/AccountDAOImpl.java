@@ -1,8 +1,7 @@
 package uz.learn.it.repository.impl;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Account;
 import uz.learn.it.repository.AccountDAO;
@@ -12,81 +11,44 @@ import java.util.Optional;
 
 @Repository
 public class AccountDAOImpl implements AccountDAO {
-    private final SessionFactory sessionFactory;
-
-    @Autowired
-    public AccountDAOImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public void saveAccount(Account account) {
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            session.save(account);
-
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            if(sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        entityManager.persist(account);
     }
 
     @Override
     public List<Account> getAccountsByClientId(long clientId) {
-        Session session = sessionFactory.openSession();
-
-        return session.createQuery("from Account where client.id = :clientId", Account.class)
+        return entityManager.createQuery("from Account where client.id = :clientId", Account.class)
                     .setParameter("clientId", clientId)
                 .getResultList();
     }
 
     @Override
     public List<Account> getAccounts() {
-        Session session = sessionFactory.openSession();
-
-        return session.createQuery("from Account", Account.class).getResultList();
+        return entityManager.createQuery("from Account", Account.class).getResultList();
     }
 
     @Override
     public Optional<Account> getAccountByAccountNumber(String accountNumber) {
-        Session session = sessionFactory.openSession();
-
-        Account account = session.createQuery("from Account where accountNumber = :accountNumber", Account.class)
+        Account account = entityManager.createQuery("from Account where accountNumber = :accountNumber", Account.class)
                 .setParameter("accountNumber", accountNumber)
-                .getSingleResult();;
+                .getSingleResult();
 
         return Optional.ofNullable(account);
     }
 
     @Override
     public Optional<Account> getAccountByAccountId(long accountId) {
-        Session session = sessionFactory.openSession();
-
-        Account account = session.get(Account.class, accountId);
+        Account account = entityManager.find(Account.class, accountId);
 
         return Optional.ofNullable(account);
     }
 
     @Override
     public void updateAccount(Account account) {
-        try(Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-
-            // Merge the entity to persist the changes
-            session.merge(account);
-
-            session.getTransaction().commit();// Only modified fields are updated
-        } catch (Exception e) {
-            if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
-                sessionFactory.getCurrentSession().getTransaction().rollback();
-            }
-
-            e.printStackTrace();
-        }
+        entityManager.merge(account);
     }
 }

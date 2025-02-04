@@ -1,5 +1,7 @@
 package uz.learn.it.constants;
 
+import org.springframework.http.HttpStatus;
+
 public class SuccessfulMessageConstants {
     public static final String ACCOUNT_OPENED_SUCCESSFULLY_MESSAGE = "Account has successfully opened!";
 
@@ -11,5 +13,5 @@ public class SuccessfulMessageConstants {
 
     public static final String SUCCESSFUL_MESSAGE = "Successfully done!";
 
-    public static final String OK = "OK";
+    public static final String OK = HttpStatus.OK.getReasonPhrase();
 }
