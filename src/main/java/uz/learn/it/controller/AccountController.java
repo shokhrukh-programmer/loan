@@ -7,10 +7,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
-import uz.learn.it.entity.Account;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.AccountCreationResponseDTO;
+import uz.learn.it.entity.Account;
 import uz.learn.it.service.AccountService;
 
 import java.util.List;
@@ -28,17 +28,17 @@ public class AccountController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<Account>>> getAccounts() {
         return new ResponseEntity<>(
-            APIResponseDTO.<List<Account>>builder()
-                    .data(accountService.getAccounts()).build(), HttpStatus.OK
+                APIResponseDTO.<List<Account>>builder()
+                        .data(accountService.getAccounts()).build(), HttpStatus.OK
         );
     }
 
-    @GetMapping(value = "/{accountId:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<Account>>> getAccountById(
-            @PathVariable("accountId") Long accountId) {
+    @GetMapping(value = "/{clientId:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIResponseDTO<List<Account>>> getAccountByClientId(
+            @PathVariable("clientId") Long clientId) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<Account>>builder()
-                        .data(accountService.getAccountsByClientId(accountId)).build(), HttpStatus.OK
+                        .data(accountService.getAccountsByClientId(clientId)).build(), HttpStatus.OK
         );
     }
 

@@ -1,7 +1,11 @@
 package uz.learn.it.repository.impl;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.entity.Client;
@@ -17,7 +21,15 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public List<Client> findAll() {
-        return entityManager.createQuery("from Client", Client.class).getResultList();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Client> cq = cb.createQuery(Client.class);
+
+        Root<Client> root = cq.from(Client.class);
+
+        cq.select(root);
+
+        return entityManager.createQuery(cq).getResultList();
     }
 
     @Override
@@ -27,11 +39,21 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public Optional<Client> getClientById(long clientId) {
-        Client client = entityManager.createQuery("from Client where id = :clientId", Client.class)
-                .setParameter("clientId", clientId)
-                .getSingleResult();
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        return Optional.ofNullable(client);
+            CriteriaQuery<Client> cq = cb.createQuery(Client.class);
+
+            Root<Client> root = cq.from(Client.class);
+
+            cq.select(root).where(cb.equal(root.get("id"), clientId));
+
+            Client client = entityManager.createQuery(cq).getSingleResult();
+
+            return Optional.of(client);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

@@ -7,11 +7,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
-import uz.learn.it.entity.Client;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
+import uz.learn.it.entity.Client;
 import uz.learn.it.service.ClientService;
 
 import java.util.List;

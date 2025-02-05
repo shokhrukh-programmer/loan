@@ -15,6 +15,6 @@ public interface AccountDAO {
     Optional<Account> getAccountByAccountNumber(String accountNumber);
 
     Optional<Account> getAccountByAccountId(long accountId);
-    
+
     void updateAccount(Account account);
 }

@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
+import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
 import uz.learn.it.enums.AccountType;
-import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.helper.AccountNumberGenerator;
@@ -66,8 +66,8 @@ public class AccountServiceImpl implements AccountService {
     private void checkForAccountAlreadyExistence(long clientId, String accountType) {
         List<Account> accounts = getAccountsByClientId(clientId);
         if (accounts != null) {
-            for(Account a : accounts) {
-                if(a.getAccountType().equals(accountType)) {
+            for (Account a : accounts) {
+                if (a.getAccountType().equals(accountType)) {
                     throw new AlreadyExistException(String.format(ExceptionMessageConstants.ACCOUNT_EXIST_MESSAGE,
                             accountType, clientId));
                 }

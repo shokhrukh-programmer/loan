@@ -3,6 +3,7 @@ package uz.learn.it.repository;
 import uz.learn.it.entity.Loan;
 import uz.learn.it.entity.LoanPaymentHistory;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public interface LoanDAO {
 
     void update(Loan loan);
 
-    List<LoanPaymentHistory> getLoanPaymentHistory();
+    List<LoanPaymentHistory> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate);
 
     List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId);
 

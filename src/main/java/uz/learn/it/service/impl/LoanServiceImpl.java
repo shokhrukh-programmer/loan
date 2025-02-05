@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
-import uz.learn.it.entity.*;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
+import uz.learn.it.entity.*;
 import uz.learn.it.enums.PaymentTypeForLoan;
 import uz.learn.it.enums.PaymentTypeForTransaction;
 import uz.learn.it.exception.ValidationException;
@@ -22,6 +22,7 @@ import uz.learn.it.repository.LoanDAO;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class LoanServiceImpl implements LoanService {
 
         double dailyInterest;
 
-        for(Loan l : loanList) {
+        for (Loan l : loanList) {
             dailyInterest = l.getBalance() / 100.0 * l.getInterestRate() / 365;
 
             l.setDebt(l.getDebt() + dailyInterest);
@@ -99,8 +100,9 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId) {
-        return dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId);
+    public List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId, int page, int size,
+                                                           LocalDate fromDate, LocalDate toDate) {
+        return dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId, page, size, fromDate, toDate);
     }
 
     private Client checkClientExistence(LoanCreationRequestDTO loanRequest) {
@@ -115,7 +117,7 @@ public class LoanServiceImpl implements LoanService {
         Account account = accountDAO.getAccountByAccountNumber(loanDetails.getAccountNumber())
                 .orElseThrow(() -> new AccountNotFoundException(ExceptionMessageConstants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
 
-        if(loanDetails.getPaymentAmount() > account.getBalance()) {
+        if (loanDetails.getPaymentAmount() > account.getBalance()) {
             throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
 
@@ -125,8 +127,8 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanPaymentHistory> getLoanPaymentHistory() {
-        return loanDAO.getLoanPaymentHistory();
+    public List<LoanPaymentHistory> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
+        return loanDAO.getLoanPaymentHistory(page, size, fromDate, toDate);
     }
 
     @Override
@@ -136,10 +138,11 @@ public class LoanServiceImpl implements LoanService {
 
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
         LoanPaymentHistory loanPaymentHistory = null;
-        if(loanDetails.getPaymentType().equals(PaymentTypeForLoan.INTEREST.name())) {
+
+        if (loanDetails.getPaymentType().equals(PaymentTypeForLoan.INTEREST.name())) {
             double debt = loan.getDebt();
 
-            if(debt > loanDetails.getPaymentAmount()) {
+            if (debt > loanDetails.getPaymentAmount()) {
                 loan.setDebt(debt - loanDetails.getPaymentAmount());
                 loanPaymentHistory = LoanPaymentHistory.builder()
                         .amount(loanDetails.getPaymentAmount())

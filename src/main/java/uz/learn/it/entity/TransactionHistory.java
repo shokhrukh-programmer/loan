@@ -1,13 +1,12 @@
 package uz.learn.it.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uz.learn.it.helper.CustomDoubleSerializer;
-
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "transaction_histories")

@@ -1,8 +1,7 @@
 package uz.learn.it.dto.request;
 
-import lombok.Data;
-
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 
 @Data
 public class AccountCreationRequestDTO {

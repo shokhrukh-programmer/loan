@@ -1,8 +1,8 @@
 package uz.learn.it;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
 import org.springframework.web.WebApplicationInitializer;
-import jakarta.servlet.ServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import uz.learn.it.config.LoanManagementConfig;

@@ -2,6 +2,9 @@ package uz.learn.it.repository.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.UserCredential;
 import uz.learn.it.repository.UserCredentialDAO;
@@ -15,7 +18,15 @@ public class UserCredentialDAOImpl implements UserCredentialDAO {
 
     @Override
     public List<UserCredential> findAll() {
-        return entityManager.createQuery("from UserCredential", UserCredential.class)
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<UserCredential> cq = cb.createQuery(UserCredential.class);
+
+        Root<UserCredential> root = cq.from(UserCredential.class);
+
+        cq.select(root);
+
+        return entityManager.createQuery(cq)
                 .getResultList();
     }
 

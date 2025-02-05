@@ -2,19 +2,21 @@ package uz.learn.it.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
-import uz.learn.it.entity.DailyLoanPaymentDebt;
-import uz.learn.it.entity.Loan;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
+import uz.learn.it.entity.DailyLoanPaymentDebt;
+import uz.learn.it.entity.Loan;
 import uz.learn.it.entity.LoanPaymentHistory;
 import uz.learn.it.service.LoanService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -39,19 +41,26 @@ public class LoanController {
     @GetMapping(value = "/{loanId:\\d+}/daily-loan-debt",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentDebt>>> getDailyInterest(
-            @PathVariable("loanId") long loanId) {
+            @PathVariable("loanId") long loanId, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<DailyLoanPaymentDebt>>builder()
-                        .data(loanService.getDailyPaymentsById(loanId))
+                        .data(loanService.getDailyPaymentsById(loanId, page, size, from, to))
                         .build(), HttpStatus.OK
         );
     }
 
     @GetMapping(value = "/payments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<LoanPaymentHistory>>> getPayments() {
+    public ResponseEntity<APIResponseDTO<List<LoanPaymentHistory>>> getPayments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<LoanPaymentHistory>>builder()
-                        .data(loanService.getLoanPaymentHistory())
+                        .data(loanService.getLoanPaymentHistory(page, size, from, to))
                         .build(), HttpStatus.OK
         );
     }

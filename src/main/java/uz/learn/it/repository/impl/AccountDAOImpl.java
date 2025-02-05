@@ -1,7 +1,11 @@
 package uz.learn.it.repository.impl;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import uz.learn.it.entity.Account;
 import uz.learn.it.repository.AccountDAO;
@@ -21,30 +25,66 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public List<Account> getAccountsByClientId(long clientId) {
-        return entityManager.createQuery("from Account where client.id = :clientId", Account.class)
-                    .setParameter("clientId", clientId)
-                .getResultList();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Account> cq = cb.createQuery(Account.class);
+
+        Root<Account> root = cq.from(Account.class);
+
+        cq.select(root).where(cb.equal(root.get("client").get("id"), clientId));
+
+        return entityManager.createQuery(cq).getResultList();
     }
 
     @Override
     public List<Account> getAccounts() {
-        return entityManager.createQuery("from Account", Account.class).getResultList();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Account> cq = cb.createQuery(Account.class);
+
+        Root<Account> root = cq.from(Account.class);
+
+        cq.select(root);
+
+        return entityManager.createQuery(cq).getResultList();
     }
 
     @Override
     public Optional<Account> getAccountByAccountNumber(String accountNumber) {
-        Account account = entityManager.createQuery("from Account where accountNumber = :accountNumber", Account.class)
-                .setParameter("accountNumber", accountNumber)
-                .getSingleResult();
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        return Optional.ofNullable(account);
+            CriteriaQuery<Account> cq = cb.createQuery(Account.class);
+
+            Root<Account> root = cq.from(Account.class);
+
+            cq.select(root).where(cb.equal(root.get("accountNumber"), accountNumber));
+
+            Account account = entityManager.createQuery(cq).getSingleResult();
+
+            return Optional.of(account);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Account> getAccountByAccountId(long accountId) {
-        Account account = entityManager.find(Account.class, accountId);
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        return Optional.ofNullable(account);
+            CriteriaQuery<Account> cq = cb.createQuery(Account.class);
+
+            Root<Account> root = cq.from(Account.class);
+
+            cq.select(root).where(cb.equal(root.get("id"), accountId));
+
+            Account account = entityManager.createQuery(cq).getSingleResult();
+
+            return Optional.of(account);
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override
