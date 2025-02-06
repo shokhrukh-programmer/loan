@@ -11,7 +11,6 @@ import uz.learn.it.constants.SuccessfulMessageConstants;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.TransactionHistoryResponseDTO;
-import uz.learn.it.entity.TransactionHistory;
 import uz.learn.it.service.TransactionService;
 
 import java.time.LocalDate;

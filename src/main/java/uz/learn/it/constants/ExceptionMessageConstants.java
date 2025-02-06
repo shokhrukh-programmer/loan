@@ -17,10 +17,6 @@ public class ExceptionMessageConstants {
 
     public static final String INVALID_REQUEST_MESSAGE = "Invalid request!";
 
-    public static final String INVALID_PATH_REQUEST_MESSAGE = "Invalid path variable request!";
-
-    public static final String INVALID_PARAM_REQUEST_MESSAGE = "Invalid param variable request!";
-
     public static final String INVALID_ACCOUNT_NUMBER = "You can not pay with this account number!";
 
     public static final String INTERNAL_SERVER_ERROR_MESSAGE = "Something went wrong!";

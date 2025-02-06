@@ -2,7 +2,6 @@ package uz.learn.it.service;
 
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.dto.response.UserCredentialResponseDTO;
-import uz.learn.it.entity.UserCredential;
 
 import java.util.List;
 

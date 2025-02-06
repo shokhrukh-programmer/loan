@@ -2,7 +2,6 @@ package uz.learn.it.service;
 
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.dto.response.AccountResponseDTO;
-import uz.learn.it.entity.Account;
 
 import java.util.List;
 

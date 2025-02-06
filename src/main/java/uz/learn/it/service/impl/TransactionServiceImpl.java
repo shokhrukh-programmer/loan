@@ -13,14 +13,12 @@ import uz.learn.it.enums.PaymentTypeForTransaction;
 import uz.learn.it.exception.ValidationException;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
-import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.TransactionDAO;
 import uz.learn.it.service.TransactionService;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

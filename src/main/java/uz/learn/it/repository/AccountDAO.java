@@ -1,6 +1,5 @@
 package uz.learn.it.repository;
 
-import uz.learn.it.dto.response.AccountResponseDTO;
 import uz.learn.it.entity.Account;
 
 import java.util.List;

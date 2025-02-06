@@ -41,19 +41,4 @@ public class Loan {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Loan{");
-        sb.append("id=").append(id);
-        sb.append(", createdDate=").append(createdDate);
-        sb.append(", amount=").append(amount);
-        sb.append(", term=").append(term);
-        sb.append(", interestRate=").append(interestRate);
-        sb.append(", balance=").append(balance);
-        sb.append(", debt=").append(debt);
-        sb.append(", clientId=").append(client.getId());
-        sb.append('}');
-        return sb.toString();
-    }
 }

@@ -14,9 +14,6 @@ import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.DailyLoanPaymentDebtResponseDTO;
 import uz.learn.it.dto.response.LoanPaymentHistoryResponseDTO;
 import uz.learn.it.dto.response.LoanResponseDTO;
-import uz.learn.it.entity.DailyLoanPaymentDebt;
-import uz.learn.it.entity.Loan;
-import uz.learn.it.entity.LoanPaymentHistory;
 import uz.learn.it.service.LoanService;
 
 import java.time.LocalDate;

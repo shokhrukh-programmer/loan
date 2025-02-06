@@ -5,9 +5,6 @@ import uz.learn.it.dto.request.LoanPaymentRequestDTO;
 import uz.learn.it.dto.response.DailyLoanPaymentDebtResponseDTO;
 import uz.learn.it.dto.response.LoanPaymentHistoryResponseDTO;
 import uz.learn.it.dto.response.LoanResponseDTO;
-import uz.learn.it.entity.DailyLoanPaymentDebt;
-import uz.learn.it.entity.Loan;
-import uz.learn.it.entity.LoanPaymentHistory;
 
 import java.time.LocalDate;
 import java.util.List;

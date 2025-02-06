@@ -35,17 +35,4 @@ public class TransactionHistory {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("TransactionHistory{");
-        sb.append("id=").append(id);
-        sb.append(", date=").append(date);
-        sb.append(", accountNumber='").append(accountNumber).append('\'');
-        sb.append(", operation='").append(operation).append('\'');
-        sb.append(", remainingBalance=").append(remainingBalance);
-        sb.append(", clientId=").append(client.getId());
-        sb.append('}');
-        return sb.toString();
-    }
 }

@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import uz.learn.it.helper.CustomDoubleSerializer;
 
-import java.util.StringJoiner;
-
 @Entity
 @Table(name = "accounts")
 @Getter
