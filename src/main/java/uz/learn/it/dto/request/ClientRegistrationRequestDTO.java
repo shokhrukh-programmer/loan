@@ -18,12 +18,15 @@ public class ClientRegistrationRequestDTO {
     @Size(min = 3, max = 15, message = "Last name should be between 3 and 15 character length!")
     private String lastName;
 
+    @NotNull(message = "Passport info can not be null!")
     @Pattern(regexp = "^[A-Z]{2}\\d{7}$", message = "Passport info should be in this format: AA1234567")
     private String passportInfo;
 
+    @NotNull(message = "Phone number can not be null!")
     @Pattern(regexp = "^\\+998\\d{9}$", message = "Phone number should start with +998 and contain 13 digits")
     private String phoneNumber;
 
-    @Pattern(regexp = "^CLIENT|MANAGER$", message = "Roles' list: MANAGER, CLIENT")
+    @NotNull(message = "Role can not be null!")
+    @Pattern(regexp = "^CLIENT|MANAGER$", message = "Role should be: MANAGER or CLIENT")
     private String role;
 }

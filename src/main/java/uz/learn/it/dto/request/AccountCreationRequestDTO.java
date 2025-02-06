@@ -1,5 +1,6 @@
 package uz.learn.it.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import lombok.Data;
 public class AccountCreationRequestDTO {
     private long clientId;
 
+    @NotNull(message = "Account can not be null!")
     @Pattern(regexp = "^(ACCOUNT|DEPOSIT)$", message = "Account type should be ACCOUNT or DEPOSIT!")
     private String accountType;
 }
