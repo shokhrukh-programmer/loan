@@ -41,7 +41,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionHistoryResponseDTO> getOperationHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
-        List<TransactionHistory> transactionHistories = transactionDAO.getTransactionHistory(page, size, fromDate, toDate);
+        List<TransactionHistory> transactionHistories = transactionDAO.findAll();
 
         return transactionHistories.stream()
                 .map(t -> new TransactionHistoryResponseDTO(t.getId(), t.getDate(), t.getOperation(),
@@ -66,12 +66,12 @@ public class TransactionServiceImpl implements TransactionService {
                 .client(client)
                 .build();
 
-        transactionDAO.saveTransaction(transactionHistory);
+        transactionDAO.save(transactionHistory);
     }
 
     @Override
     public Account getAccountByAccountId(long accountId) {
-        return accountDAO.getAccountByAccountId(accountId)
+        return accountDAO.getAccountsById(accountId)
                 .orElseThrow(AccountNotFoundException::new);
     }
 
@@ -87,7 +87,7 @@ public class TransactionServiceImpl implements TransactionService {
             operation.append("- ");
         }
 
-        accountDAO.updateAccount(account);
+        accountDAO.save(account);
 
         return operation;
     }

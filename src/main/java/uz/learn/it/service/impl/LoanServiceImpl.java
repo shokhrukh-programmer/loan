@@ -17,10 +17,7 @@ import uz.learn.it.exception.ValidationException;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.exception.notfound.LoanNotFoundException;
-import uz.learn.it.repository.AccountDAO;
-import uz.learn.it.repository.ClientDAO;
-import uz.learn.it.repository.DailyLoanDebtDAO;
-import uz.learn.it.repository.LoanDAO;
+import uz.learn.it.repository.*;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
 
@@ -40,10 +37,12 @@ public class LoanServiceImpl implements LoanService {
 
     private final ClientDAO clientDAO;
 
+    private final LoanPaymentHistoryDAO loanPaymentHistoryDAO;
+
     @Autowired
     public LoanServiceImpl(TransactionService transactionService, LoanDAO loanDAO,
                            AccountDAO accountDAO, DailyLoanDebtDAO dailyLoanDebtDAO,
-                           ClientDAO clientDAO) {
+                           ClientDAO clientDAO, LoanPaymentHistoryDAO loanPaymentHistoryDAO) {
         this.transactionService = transactionService;
 
         this.loanDAO = loanDAO;
@@ -53,6 +52,8 @@ public class LoanServiceImpl implements LoanService {
         this.dailyLoanDebtDAO = dailyLoanDebtDAO;
 
         this.clientDAO = clientDAO;
+
+        this.loanPaymentHistoryDAO = loanPaymentHistoryDAO;
     }
 
     @Override
@@ -69,12 +70,12 @@ public class LoanServiceImpl implements LoanService {
                 .client(client)
                 .build();
 
-        loanDAO.saveLoan(loan);
+        loanDAO.save(loan);
     }
 
     @Override
     public List<LoanResponseDTO> getLoans() {
-        List<Loan> loans = loanDAO.getLoans();
+        List<Loan> loans = loanDAO.findAll();
 
         return loans.stream()
                 .map(l -> new LoanResponseDTO(l.getId(), l.getCreatedDate(), l.getAmount(), l.getTerm(),
@@ -85,7 +86,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     @Transactional
     public void calculateInterest() {
-        List<Loan> loanList = loanDAO.getLoans();
+        List<Loan> loanList = loanDAO.findAll();
 
         double dailyInterest;
 
@@ -94,7 +95,7 @@ public class LoanServiceImpl implements LoanService {
 
             l.setDebt(l.getDebt() + dailyInterest);
 
-            loanDAO.update(l);
+            loanDAO.save(l);
 
             DailyLoanPaymentDebt dailyLoanPaymentDebt = DailyLoanPaymentDebt.builder()
                     .date(LocalDate.now())
@@ -102,14 +103,14 @@ public class LoanServiceImpl implements LoanService {
                     .loan(l)
                     .build();
 
-            dailyLoanDebtDAO.saveDailyLoanDebt(dailyLoanPaymentDebt);
+            dailyLoanDebtDAO.save(dailyLoanPaymentDebt);
         }
     }
 
     @Override
     public List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(long loanId, int page, int size,
                                                                       LocalDate fromDate, LocalDate toDate) {
-        List<DailyLoanPaymentDebt> debts = dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId, page, size, fromDate, toDate);
+        List<DailyLoanPaymentDebt> debts = dailyLoanDebtDAO.getByLoanId(loanId);
 
         return debts.stream()
                 .map(d -> new DailyLoanPaymentDebtResponseDTO(d.getId(), d.getDate(),
@@ -124,12 +125,12 @@ public class LoanServiceImpl implements LoanService {
     @Override
     @Transactional
     public void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails) {
-        Loan loan = loanDAO.getLoanByLoanId(loanId).orElseThrow(LoanNotFoundException::new);
+        Loan loan = loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new);
 
-        Account account = accountDAO.getAccountByAccountNumber(loanDetails.getAccountNumber())
+        Account account = accountDAO.getAccountsByAccountNumber(loanDetails.getAccountNumber())
                 .orElseThrow(() -> new AccountNotFoundException(ExceptionMessageConstants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
 
-        if(account.getClient().getId() != loan.getClient().getId()) {
+        if (account.getClient().getId() != loan.getClient().getId()) {
             throw new ValidationException(ExceptionMessageConstants.INVALID_ACCOUNT_NUMBER);
         }
 
@@ -144,21 +145,21 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
-        List<LoanPaymentHistory> paymentHistories = loanDAO.getLoanPaymentHistory(page, size, fromDate, toDate);
+        List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.findAll();
 
         return paymentHistories.stream()
                 .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getAmount(),
-                        p.getInterestPayment(), p.getMainPayment(),  p.getDate(), p.getLoan().getId()))
+                        p.getInterestPayment(), p.getMainPayment(), p.getDate(), p.getLoan().getId()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByLoanId(long loanId) {
-        List<LoanPaymentHistory> paymentHistories = loanDAO.getLoanPaymentHistoryByLoanId(loanId);
+        List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.getByLoanId(loanId);
 
         return paymentHistories.stream()
                 .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getAmount(),
-                        p.getInterestPayment(), p.getMainPayment(),  p.getDate(), p.getLoan().getId()))
+                        p.getInterestPayment(), p.getMainPayment(), p.getDate(), p.getLoan().getId()))
                 .collect(Collectors.toList());
     }
 
@@ -191,8 +192,8 @@ public class LoanServiceImpl implements LoanService {
             loan.setBalance(loan.getBalance() - loanDetails.getPaymentAmount());
         }
 
-        loanDAO.update(loan);
-        loanDAO.saveLoanPaymentHistory(loanPaymentHistory);
+        loanDAO.save(loan);
+        loanPaymentHistoryDAO.save(loanPaymentHistory);
     }
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {

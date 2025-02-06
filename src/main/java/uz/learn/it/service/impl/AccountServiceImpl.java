@@ -52,12 +52,12 @@ public class AccountServiceImpl implements AccountService {
                 .client(client)
                 .build();
 
-        accountDAO.saveAccount(account);
+        accountDAO.save(account);
     }
 
     @Override
     public List<AccountResponseDTO> getAccountsByClientId(long clientId) {
-        List<Account> accounts = accountDAO.getAccountsByClientId(clientId);
+        List<Account> accounts = accountDAO.findByClientId(clientId);
 
         return accounts.stream()
                 .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),
@@ -67,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountResponseDTO> getAccounts() {
-        List<Account> accounts = accountDAO.getAccounts();
+        List<Account> accounts = accountDAO.findAll();
 
         return accounts.stream()
                 .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),

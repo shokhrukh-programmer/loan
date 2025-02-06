@@ -48,8 +48,11 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public void updateClientById(long clientId, ClientModificationRequestDTO client) {
-        clientDAO.update(clientId, client);
+    public void updateClientById(long clientId, ClientModificationRequestDTO tempClient) {
+        Client client = null;
+
+
+        //clientDAO.save(clientId, client);
     }
 
     @Override
