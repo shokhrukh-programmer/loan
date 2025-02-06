@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
+import uz.learn.it.dto.response.TransactionHistoryResponseDTO;
 import uz.learn.it.entity.TransactionHistory;
 import uz.learn.it.service.TransactionService;
 
@@ -27,12 +28,12 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/histories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<TransactionHistory>>> getOperationHistory(
+    public ResponseEntity<APIResponseDTO<List<TransactionHistoryResponseDTO>>> getOperationHistory(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return new ResponseEntity<>(
-                APIResponseDTO.<List<TransactionHistory>>builder()
+                APIResponseDTO.<List<TransactionHistoryResponseDTO>>builder()
                         .data(transactionService.getOperationHistory(page, size, from, to))
                         .build(), HttpStatus.OK
         );

@@ -24,4 +24,15 @@ public class UserCredential {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UserCredential{");
+        sb.append("id=").append(id);
+        sb.append(", username='").append(username).append('\'');
+        sb.append(", password='").append(password).append('\'');
+        sb.append(", clientId=").append(client.getId());
+        sb.append('}');
+        return sb.toString();
+    }
 }

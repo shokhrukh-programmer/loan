@@ -7,6 +7,9 @@ import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.request.LoanCreationRequestDTO;
 import uz.learn.it.dto.request.LoanPaymentRequestDTO;
+import uz.learn.it.dto.response.DailyLoanPaymentDebtResponseDTO;
+import uz.learn.it.dto.response.LoanPaymentHistoryResponseDTO;
+import uz.learn.it.dto.response.LoanResponseDTO;
 import uz.learn.it.entity.*;
 import uz.learn.it.enums.PaymentTypeForLoan;
 import uz.learn.it.enums.PaymentTypeForTransaction;
@@ -14,7 +17,6 @@ import uz.learn.it.exception.ValidationException;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.exception.notfound.LoanNotFoundException;
-import uz.learn.it.helper.DateFormatter;
 import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.DailyLoanDebtDAO;
@@ -23,8 +25,8 @@ import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -59,7 +61,7 @@ public class LoanServiceImpl implements LoanService {
         Client client = checkClientExistence(loanRequest);
 
         Loan loan = Loan.builder()
-                .createdDate(DateFormatter.dateFormatter(new Date()))
+                .createdDate(LocalDate.now())
                 .amount(loanRequest.getLoanAmount())
                 .term(loanRequest.getLoanTerm())
                 .interestRate(loanRequest.getInterestRate())
@@ -71,8 +73,13 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> getLoans() {
-        return loanDAO.getLoans();
+    public List<LoanResponseDTO> getLoans() {
+        List<Loan> loans = loanDAO.getLoans();
+
+        return loans.stream()
+                .map(l -> new LoanResponseDTO(l.getId(), l.getCreatedDate(), l.getAmount(), l.getTerm(),
+                        l.getInterestRate(), l.getBalance(), l.getDebt(), l.getClient().getId()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -90,7 +97,7 @@ public class LoanServiceImpl implements LoanService {
             loanDAO.update(l);
 
             DailyLoanPaymentDebt dailyLoanPaymentDebt = DailyLoanPaymentDebt.builder()
-                    .date(DateFormatter.dateFormatter(new Date()))
+                    .date(LocalDate.now())
                     .dailyInterestAmount(dailyInterest)
                     .loan(l)
                     .build();
@@ -100,9 +107,14 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<DailyLoanPaymentDebt> getDailyPaymentsById(long loanId, int page, int size,
-                                                           LocalDate fromDate, LocalDate toDate) {
-        return dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId, page, size, fromDate, toDate);
+    public List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(long loanId, int page, int size,
+                                                                      LocalDate fromDate, LocalDate toDate) {
+        List<DailyLoanPaymentDebt> debts = dailyLoanDebtDAO.getDailyLoanDebtsByLoanId(loanId, page, size, fromDate, toDate);
+
+        return debts.stream()
+                .map(d -> new DailyLoanPaymentDebtResponseDTO(d.getId(), d.getDate(),
+                        d.getDailyInterestAmount(), d.getLoan().getId()))
+                .collect(Collectors.toList());
     }
 
     private Client checkClientExistence(LoanCreationRequestDTO loanRequest) {
@@ -117,6 +129,10 @@ public class LoanServiceImpl implements LoanService {
         Account account = accountDAO.getAccountByAccountNumber(loanDetails.getAccountNumber())
                 .orElseThrow(() -> new AccountNotFoundException(ExceptionMessageConstants.ACCOUNT_NOT_EXIST_BY_ACCOUNT_NUMBER));
 
+        if(account.getClient().getId() != loan.getClient().getId()) {
+            throw new ValidationException(ExceptionMessageConstants.INVALID_ACCOUNT_NUMBER);
+        }
+
         if (loanDetails.getPaymentAmount() > account.getBalance()) {
             throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
@@ -127,13 +143,23 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanPaymentHistory> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
-        return loanDAO.getLoanPaymentHistory(page, size, fromDate, toDate);
+    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
+        List<LoanPaymentHistory> paymentHistories = loanDAO.getLoanPaymentHistory(page, size, fromDate, toDate);
+
+        return paymentHistories.stream()
+                .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getAmount(),
+                        p.getInterestPayment(), p.getMainPayment(),  p.getDate(), p.getLoan().getId()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<LoanPaymentHistory> getLoanPaymentHistoryByLoanId(long loanId) {
-        return loanDAO.getLoanPaymentHistoryByLoanId(loanId);
+    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByLoanId(long loanId) {
+        List<LoanPaymentHistory> paymentHistories = loanDAO.getLoanPaymentHistoryByLoanId(loanId);
+
+        return paymentHistories.stream()
+                .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getAmount(),
+                        p.getInterestPayment(), p.getMainPayment(),  p.getDate(), p.getLoan().getId()))
+                .collect(Collectors.toList());
     }
 
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
@@ -147,7 +173,7 @@ public class LoanServiceImpl implements LoanService {
                 loanPaymentHistory = LoanPaymentHistory.builder()
                         .amount(loanDetails.getPaymentAmount())
                         .interestPayment(loanDetails.getPaymentAmount())
-                        .date(DateFormatter.dateFormatter(new Date()))
+                        .date(LocalDate.now())
                         .loan(loan)
                         .build();
             } else {
@@ -157,7 +183,7 @@ public class LoanServiceImpl implements LoanService {
                         .amount(loanDetails.getPaymentAmount())
                         .interestPayment(debt)
                         .mainPayment(loanDetails.getPaymentAmount() - debt)
-                        .date(DateFormatter.dateFormatter(new Date()))
+                        .date(LocalDate.now())
                         .loan(loan)
                         .build();
             }

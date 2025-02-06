@@ -1,19 +1,21 @@
 package uz.learn.it.dto.request;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class LoanCreationRequestDTO {
     private long clientId;
 
-    @Min(value = 0, message = "Loan amount can not be negative number!")
-    private double loanAmount;
+    @NotNull(message = "Loan amount can not be null!")
+    @DecimalMin(value = "0.0", message = "Amount must be a non-negative number")
+    private Double loanAmount;
 
-    @Min(value = 0, message = "Interest rate can not be negative number!")
-    private double interestRate;
+    @NotNull(message = "Interest rate can not be null!")
+    @DecimalMin(value = "0.0", message = "Interest rate must be a non-negative number")
+    private Double interestRate;
 
-    @Min(value = 0, message = "Loan term can not be negative number!")
-    private int loanTerm;
+    @NotNull(message = "Loan term can not be null!")
+    @DecimalMin(value = "0.0", message = "Loan term must be a non-negative number")
+    private Integer loanTerm;
 }

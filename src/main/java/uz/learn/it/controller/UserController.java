@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.learn.it.dto.response.APIResponseDTO;
-import uz.learn.it.entity.UserCredential;
+import uz.learn.it.dto.response.UserCredentialResponseDTO;
 import uz.learn.it.service.UserService;
 
 import java.util.List;
@@ -26,9 +26,9 @@ public class UserController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<UserCredential>>> getUserDetails() {
+    public ResponseEntity<APIResponseDTO<List<UserCredentialResponseDTO>>> getUserDetails() {
         return new ResponseEntity<>(
-                APIResponseDTO.<List<UserCredential>>builder()
+                APIResponseDTO.<List<UserCredentialResponseDTO>>builder()
                         .data(userService.getUserCredentials())
                         .build(), HttpStatus.OK
         );

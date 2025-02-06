@@ -8,7 +8,7 @@ import lombok.Data;
 public class AccountCreationRequestDTO {
     private long clientId;
 
-    @NotNull(message = "Account can not be null!")
+    @NotNull(message = "Account type can not be null!")
     @Pattern(regexp = "^(ACCOUNT|DEPOSIT)$", message = "Account type should be ACCOUNT or DEPOSIT!")
     private String accountType;
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
+import uz.learn.it.dto.response.UserCredentialResponseDTO;
 import uz.learn.it.entity.Client;
 import uz.learn.it.entity.UserCredential;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
@@ -13,6 +14,7 @@ import uz.learn.it.repository.UserCredentialDAO;
 import uz.learn.it.service.UserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,8 +30,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserCredential> getUserCredentials() {
-        return userCredentialDAO.findAll();
+    public List<UserCredentialResponseDTO> getUserCredentials() {
+        List<UserCredential> userCredentials = userCredentialDAO.findAll();
+
+        return userCredentials.stream()
+                .map(u -> new UserCredentialResponseDTO(u.getId(), u.getUsername(),
+                        u.getPassword(), u.getClient().getId()))
+                .collect(Collectors.toList());
     }
 
     @Override

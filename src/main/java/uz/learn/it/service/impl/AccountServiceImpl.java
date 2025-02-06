@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
+import uz.learn.it.dto.response.AccountResponseDTO;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
 import uz.learn.it.enums.AccountType;
@@ -16,6 +17,7 @@ import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.service.AccountService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -54,19 +56,29 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAccountsByClientId(long clientId) {
-        return accountDAO.getAccountsByClientId(clientId);
+    public List<AccountResponseDTO> getAccountsByClientId(long clientId) {
+        List<Account> accounts = accountDAO.getAccountsByClientId(clientId);
+
+        return accounts.stream()
+                .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),
+                        a.getAccountNumber(), a.getBalance(), a.getClient().getId()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Account> getAccounts() {
-        return accountDAO.getAccounts();
+    public List<AccountResponseDTO> getAccounts() {
+        List<Account> accounts = accountDAO.getAccounts();
+
+        return accounts.stream()
+                .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),
+                        a.getAccountNumber(), a.getBalance(), a.getClient().getId()))
+                .collect(Collectors.toList());
     }
 
     private void checkForAccountAlreadyExistence(long clientId, String accountType) {
-        List<Account> accounts = getAccountsByClientId(clientId);
+        List<AccountResponseDTO> accounts = getAccountsByClientId(clientId);
         if (accounts != null) {
-            for (Account a : accounts) {
+            for (AccountResponseDTO a : accounts) {
                 if (a.getAccountType().equals(accountType)) {
                     throw new AlreadyExistException(String.format(ExceptionMessageConstants.ACCOUNT_EXIST_MESSAGE,
                             accountType, clientId));

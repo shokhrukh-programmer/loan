@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
+import uz.learn.it.dto.response.TransactionHistoryResponseDTO;
 import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
 import uz.learn.it.entity.TransactionHistory;
@@ -21,6 +22,7 @@ import uz.learn.it.service.TransactionService;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -40,8 +42,13 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionHistory> getOperationHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
-        return transactionDAO.getTransactionHistory(page, size, fromDate, toDate);
+    public List<TransactionHistoryResponseDTO> getOperationHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
+        List<TransactionHistory> transactionHistories = transactionDAO.getTransactionHistory(page, size, fromDate, toDate);
+
+        return transactionHistories.stream()
+                .map(t -> new TransactionHistoryResponseDTO(t.getId(), t.getDate(), t.getOperation(),
+                          t.getAccountNumber(), t.getRemainingBalance(), t.getClient().getId()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -54,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
         Client client = clientDAO.getClientById(account.getClient().getId()).orElseThrow(ClientNotFoundException::new);
 
         TransactionHistory transactionHistory = TransactionHistory.builder()
-                .date(DateFormatter.dateFormatter(new Date()))
+                .date(LocalDate.now())
                 .accountNumber(account.getAccountNumber())
                 .operation(operation.append(accountTransactionRequestDTO.getAmountToTopUpAndWithdraw()).toString())
                 .remainingBalance(account.getBalance())

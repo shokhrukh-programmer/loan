@@ -10,7 +10,7 @@ import uz.learn.it.constants.SuccessfulMessageConstants;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.AccountCreationResponseDTO;
-import uz.learn.it.entity.Account;
+import uz.learn.it.dto.response.AccountResponseDTO;
 import uz.learn.it.service.AccountService;
 
 import java.util.List;
@@ -26,18 +26,18 @@ public class AccountController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<Account>>> getAccounts() {
+    public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccounts() {
         return new ResponseEntity<>(
-                APIResponseDTO.<List<Account>>builder()
+                APIResponseDTO.<List<AccountResponseDTO>>builder()
                         .data(accountService.getAccounts()).build(), HttpStatus.OK
         );
     }
 
     @GetMapping(value = "/{clientId:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIResponseDTO<List<Account>>> getAccountByClientId(
-            @PathVariable("clientId") Long clientId) {
+    public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccountByClientId(
+            @PathVariable("clientId") long clientId) {
         return new ResponseEntity<>(
-                APIResponseDTO.<List<Account>>builder()
+                APIResponseDTO.<List<AccountResponseDTO>>builder()
                         .data(accountService.getAccountsByClientId(clientId)).build(), HttpStatus.OK
         );
     }

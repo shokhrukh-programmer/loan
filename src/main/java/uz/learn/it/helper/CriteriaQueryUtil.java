@@ -14,15 +14,12 @@ public class CriteriaQueryUtil {
             CriteriaBuilder cb, Root<?> root, String dateField, LocalDate fromDate, LocalDate toDate) {
         List<Predicate> predicates = new ArrayList<>();
 
-        Expression<LocalDate> dateExpression = cb.function("TO_DATE", LocalDate.class,
-                root.get(dateField), cb.literal("YYYY-MM-DD"));
-
         if (fromDate != null) {
-            predicates.add(cb.greaterThanOrEqualTo(dateExpression, fromDate));
+            predicates.add(cb.greaterThanOrEqualTo(root.get(dateField), fromDate));
         }
 
         if (toDate != null) {
-            predicates.add(cb.lessThanOrEqualTo(dateExpression, toDate));
+            predicates.add(cb.lessThanOrEqualTo(root.get(dateField), toDate));
         }
 
         return predicates;
