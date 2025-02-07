@@ -25,7 +25,6 @@ public class Account {
 
     private String accountNumber;
 
-    @JsonSerialize(using = CustomDoubleSerializer.class)
     private double balance;
 
     @ManyToOne(fetch = FetchType.EAGER)

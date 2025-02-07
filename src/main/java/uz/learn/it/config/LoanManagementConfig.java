@@ -1,11 +1,12 @@
 package uz.learn.it.config;
 
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -29,11 +30,38 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan("uz.learn.it.*")
 public class LoanManagementConfig implements WebMvcConfigurer {
-    private final Environment env;
+    @Value("${database.className}")
+    private String driver;
 
-    public LoanManagementConfig(Environment env) {
-        this.env = env;
-    }
+    @Value("${database.url}")
+    private String url;
+
+    @Value("${database.username}")
+    private String username;
+
+    @Value("${database.password}")
+    private String password;
+
+    @Value("${entity.package}")
+    private String packageName;
+
+    @Value("${dialect.name}")
+    private String dialectName;
+
+    @Value("${dialect.value}")
+    private String dialectValue;
+
+    @Value("${sql.trace.name}")
+    private String sqlTraceName;
+
+    @Value("${sql.trace.value}")
+    private String sqlTraceValue;
+
+    @Value("${database.creation.name}")
+    private String databaseCreationName;
+
+    @Value("${database.creation.value}")
+    private String databaseCreationValue;
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -41,13 +69,18 @@ public class LoanManagementConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        dataSource.setDriverClassName(env.getProperty("database.className"));
-        dataSource.setUrl(env.getProperty("database.url"));
-        dataSource.setUsername(env.getProperty("database.username"));
-        dataSource.setPassword(env.getProperty("database.password"));
+        dataSource.setDriverClassName(driver);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
 
         return dataSource;
     }
@@ -57,7 +90,7 @@ public class LoanManagementConfig implements WebMvcConfigurer {
         LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
 
         entityManager.setDataSource(dataSource());
-        entityManager.setPackagesToScan(env.getProperty("entity.package"));
+        entityManager.setPackagesToScan(packageName);
         entityManager.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         entityManager.setJpaProperties(hibernateProperties());
 
@@ -77,10 +110,9 @@ public class LoanManagementConfig implements WebMvcConfigurer {
     private Properties hibernateProperties() {
         Properties properties = new Properties();
 
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.put("hibernate.show_sql", "true");
-        properties.put("hibernate.format_sql", "true");
-        properties.put("hibernate.hbm2ddl.auto", "create");
+        properties.put(dialectName, dialectValue);
+        properties.put(sqlTraceName, sqlTraceValue);
+        properties.put(databaseCreationName, databaseCreationValue);
 
         return properties;
     }

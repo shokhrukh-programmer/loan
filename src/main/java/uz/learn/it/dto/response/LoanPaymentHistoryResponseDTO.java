@@ -19,6 +19,7 @@ public class LoanPaymentHistoryResponseDTO {
     @JsonSerialize(using = CustomDoubleSerializer.class)
     private double amount;
 
+    @JsonSerialize(using = CustomDoubleSerializer.class)
     private double interestPayment;
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
