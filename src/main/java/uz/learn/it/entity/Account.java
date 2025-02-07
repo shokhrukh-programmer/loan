@@ -1,11 +1,9 @@
 package uz.learn.it.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import uz.learn.it.helper.CustomDoubleSerializer;
 
 @Entity
 @Table(name = "accounts")
@@ -25,7 +23,6 @@ public class Account {
 
     private String accountNumber;
 
-    @JsonSerialize(using = CustomDoubleSerializer.class)
     private double balance;
 
     @ManyToOne(fetch = FetchType.EAGER)

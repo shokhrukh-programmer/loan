@@ -193,6 +193,7 @@ public class LoanServiceImpl implements LoanService {
         }
 
         loanDAO.save(loan);
+        assert loanPaymentHistory != null;
         loanPaymentHistoryDAO.save(loanPaymentHistory);
     }
 

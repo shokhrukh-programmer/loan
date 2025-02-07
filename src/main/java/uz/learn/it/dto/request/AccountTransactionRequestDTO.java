@@ -1,6 +1,6 @@
 package uz.learn.it.dto.request;
 
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -11,7 +11,6 @@ public class AccountTransactionRequestDTO {
     @Pattern(regexp = "^(TOP_UP|WITHDRAW)$", message = "Type should be TOP_UP or WITHDRAW!")
     private String type;
 
-    @NotNull(message = "Amount can not be null!")
-    @DecimalMin(value = "0.0", message = "Amount must be a non-negative number")
-    private Double amountToTopUpAndWithdraw;
+    @Min(value = 1, message = "Amount must be a non-negative number")
+    private double amountToTopUpAndWithdraw;
 }

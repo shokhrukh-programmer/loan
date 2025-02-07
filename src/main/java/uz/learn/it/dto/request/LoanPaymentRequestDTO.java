@@ -1,9 +1,6 @@
 package uz.learn.it.dto.request;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -13,9 +10,8 @@ public class LoanPaymentRequestDTO {
     @Pattern(regexp = "^INTEREST|MAIN$", message = "Payment type should be INTEREST or MAIN")
     private String paymentType;
 
-    @NotNull(message = "Payment amount can not be null!")
-    @DecimalMin(value = "0.0", message = "Amount must be a non-negative number")
-    private Double paymentAmount;
+    @Min(value = 1, message = "Amount must be a non-negative number")
+    private double paymentAmount;
 
     @NotNull(message = "Account number can not be null")
     @NotBlank(message = "Account number can not be blank")

@@ -3,18 +3,17 @@ package uz.learn.it.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uz.learn.it.constants.RequestCodeConstants;
-import uz.learn.it.constants.SuccessfulMessageConstants;
+import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
 @Builder
 public class APIResponseDTO<T> {
     @Builder.Default
-    private int code = RequestCodeConstants.SUCCESSFUL_CODE;
+    private int code = HttpStatus.OK.value();
 
     @Builder.Default
-    private String message = SuccessfulMessageConstants.OK;
+    private String message = HttpStatus.OK.getReasonPhrase();
 
     private T data;
 }

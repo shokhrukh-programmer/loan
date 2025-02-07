@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import uz.learn.it.constants.ExceptionMessageConstants;
-import uz.learn.it.constants.RequestCodeConstants;
 import uz.learn.it.dto.response.APIResponseDTO;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.Set;
 public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<APIResponseDTO<String>> handleAlreadyExistException(AlreadyExistException ex) {
-        APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
+        APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(), null);
 
         log.error(ex.getMessage());
@@ -34,7 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<APIResponseDTO<String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
+        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
                 ExceptionMessageConstants.INVALID_REQUEST_MESSAGE, null);
 
         log.error(ex.getMessage());
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<APIResponseDTO<String>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
+        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
                 ExceptionMessageConstants.INVALID_REQUEST_MESSAGE, null);
 
         log.error(ex.getMessage());
@@ -54,7 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<APIResponseDTO<String>> handleConstraintException(ConstraintViolationException ex) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
+        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
                 ExceptionMessageConstants.INVALID_REQUEST_MESSAGE, null);
 
         log.error(ex.getMessage());
@@ -86,7 +85,7 @@ public class GlobalExceptionHandler {
             }
         }
 
-        APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
+        APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
                 errors.toString(), null);
 
         return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
@@ -94,7 +93,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<APIResponseDTO<String>> handleNotFoundException(NotFoundException ex) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.NOT_FOUND_CODE,
+        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(), null);
 
         log.error(ex.getMessage());
@@ -104,7 +103,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<APIResponseDTO<String>> handleBalanceNotValidException(ValidationException ex) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(RequestCodeConstants.BAD_REQUEST_CODE,
+        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(), null);
 
         log.error(ex.getMessage());
