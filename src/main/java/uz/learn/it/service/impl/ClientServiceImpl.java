@@ -9,6 +9,7 @@ import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
 import uz.learn.it.exception.AlreadyExistException;
+import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.service.ClientService;
 import uz.learn.it.service.UserService;
@@ -49,10 +50,33 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public void updateClientById(long clientId, ClientModificationRequestDTO tempClient) {
-        Client client = null;
+        Client client = clientDAO.getClientById(clientId).orElseThrow(NotFoundException::new);
 
+        if (validateInput(tempClient.getFirstName())) {
+            client.setFirstName(tempClient.getFirstName());
+        }
 
-        //clientDAO.save(clientId, client);
+        if (validateInput(tempClient.getLastName())) {
+            client.setLastName(tempClient.getLastName());
+        }
+
+        if (validateInput(tempClient.getPassportInfo())) {
+            client.setPassportInfo(tempClient.getPassportInfo());
+        }
+
+        if (validateInput(tempClient.getRole())) {
+            client.setRole(tempClient.getRole());
+        }
+
+        if (validateInput(tempClient.getPhoneNumber())) {
+            client.setPhoneNumber(tempClient.getPhoneNumber());
+        }
+
+        clientDAO.save(client);
+    }
+
+    private boolean validateInput(String input) {
+        return input != null && !input.isBlank();
     }
 
     @Override

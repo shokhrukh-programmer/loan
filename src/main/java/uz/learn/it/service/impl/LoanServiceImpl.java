@@ -123,7 +123,6 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    @Transactional
     public void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails) {
         Loan loan = loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new);
 
@@ -138,6 +137,10 @@ public class LoanServiceImpl implements LoanService {
             throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
 
+        if(loanDetails.getPaymentAmount() > loan.getBalance() + loan.getDebt()) {
+            throw new ValidationException(ExceptionMessageConstants.INVALID_PAYMENT_AMOUNT);
+        }
+
         doTransactionFromBalance(loanDetails, account);
 
         payForLoan(loanDetails, loan);
@@ -148,8 +151,8 @@ public class LoanServiceImpl implements LoanService {
         List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.findAll();
 
         return paymentHistories.stream()
-                .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getAmount(),
-                        p.getInterestPayment(), p.getMainPayment(), p.getDate(), p.getLoan().getId()))
+                .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getType(), p.getAmount(),
+                        p.getDate(), p.getLoan().getId()))
                 .collect(Collectors.toList());
     }
 
@@ -158,43 +161,64 @@ public class LoanServiceImpl implements LoanService {
         List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.getByLoanId(loanId);
 
         return paymentHistories.stream()
-                .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getAmount(),
-                        p.getInterestPayment(), p.getMainPayment(), p.getDate(), p.getLoan().getId()))
+                .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getType(), p.getAmount(),
+                        p.getDate(), p.getLoan().getId()))
                 .collect(Collectors.toList());
     }
 
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
-        LoanPaymentHistory loanPaymentHistory = null;
+        LoanPaymentHistory loanPaymentHistoryInterest = null;
+        LoanPaymentHistory loanPaymentHistoryMain = null;
 
         if (loanDetails.getPaymentType().equals(PaymentTypeForLoan.INTEREST.name())) {
             double debt = loan.getDebt();
 
-            if (debt > loanDetails.getPaymentAmount()) {
+            if (debt >= loanDetails.getPaymentAmount()) {
                 loan.setDebt(debt - loanDetails.getPaymentAmount());
-                loanPaymentHistory = LoanPaymentHistory.builder()
+                loanPaymentHistoryInterest = LoanPaymentHistory.builder()
+                        .type(PaymentTypeForLoan.INTEREST)
                         .amount(loanDetails.getPaymentAmount())
-                        .interestPayment(loanDetails.getPaymentAmount())
                         .date(LocalDate.now())
                         .loan(loan)
                         .build();
+
             } else {
                 loan.setDebt(0.0);
                 loan.setBalance(loan.getBalance() - (loanDetails.getPaymentAmount() - debt));
-                loanPaymentHistory = LoanPaymentHistory.builder()
-                        .amount(loanDetails.getPaymentAmount())
-                        .interestPayment(debt)
-                        .mainPayment(loanDetails.getPaymentAmount() - debt)
+                loanPaymentHistoryInterest = LoanPaymentHistory.builder()
+                        .type(PaymentTypeForLoan.INTEREST)
+                        .amount(debt)
+                        .date(LocalDate.now())
+                        .loan(loan)
+                        .build();
+
+                loanPaymentHistoryMain = LoanPaymentHistory.builder()
+                        .type(PaymentTypeForLoan.MAIN)
+                        .amount(loanDetails.getPaymentAmount() - debt)
                         .date(LocalDate.now())
                         .loan(loan)
                         .build();
             }
         } else {
             loan.setBalance(loan.getBalance() - loanDetails.getPaymentAmount());
+
+            loanPaymentHistoryMain = LoanPaymentHistory.builder()
+                    .type(PaymentTypeForLoan.MAIN)
+                    .amount(loanDetails.getPaymentAmount())
+                    .date(LocalDate.now())
+                    .loan(loan)
+                    .build();
         }
 
         loanDAO.save(loan);
-        assert loanPaymentHistory != null;
-        loanPaymentHistoryDAO.save(loanPaymentHistory);
+
+        if(loanPaymentHistoryInterest != null) {
+            loanPaymentHistoryDAO.save(loanPaymentHistoryInterest);
+        }
+
+        if(loanPaymentHistoryMain != null) {
+            loanPaymentHistoryDAO.save(loanPaymentHistoryMain);
+        }
     }
 
     private void doTransactionFromBalance(LoanPaymentRequestDTO loanDetails, Account account) {

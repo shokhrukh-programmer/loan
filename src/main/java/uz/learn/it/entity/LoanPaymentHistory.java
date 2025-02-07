@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.learn.it.enums.PaymentTypeForLoan;
 
 import java.time.LocalDate;
 
@@ -19,11 +20,9 @@ public class LoanPaymentHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private PaymentTypeForLoan type;
+
     private double amount;
-
-    private double interestPayment;
-
-    private double mainPayment;
 
     private LocalDate date;
 

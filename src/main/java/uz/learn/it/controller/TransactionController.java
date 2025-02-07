@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/LoanManagement/api/transactions")
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -26,7 +25,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping(value = "/histories", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/histories")
     public ResponseEntity<APIResponseDTO<List<TransactionHistoryResponseDTO>>> getOperationHistory(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
@@ -38,7 +37,7 @@ public class TransactionController {
         );
     }
 
-    @PostMapping(value = "/{accountId:\\d+}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{accountId:\\d+}")
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
             @PathVariable("accountId") long id,
             @Valid @RequestBody AccountTransactionRequestDTO accountTransactionRequestDTO) {

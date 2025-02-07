@@ -3,7 +3,6 @@ package uz.learn.it.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
@@ -16,7 +15,7 @@ import uz.learn.it.service.AccountService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/LoanManagement/api/accounts")
 public class AccountController {
     private final AccountService accountService;
 
@@ -25,7 +24,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccounts() {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<AccountResponseDTO>>builder()
@@ -33,7 +32,7 @@ public class AccountController {
         );
     }
 
-    @GetMapping(value = "/{clientId:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{clientId:\\d+}")
     public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccountByClientId(
             @PathVariable("clientId") long clientId) {
         return new ResponseEntity<>(
@@ -42,7 +41,7 @@ public class AccountController {
         );
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<APIResponseDTO<AccountCreationResponseDTO>> createAccount(
             @Valid @RequestBody AccountCreationRequestDTO accountCreationRequestDTO) {
         accountService.createAccount(accountCreationRequestDTO);

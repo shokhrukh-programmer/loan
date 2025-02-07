@@ -18,6 +18,7 @@ import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.TransactionDAO;
 import uz.learn.it.service.TransactionService;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,8 +45,8 @@ public class TransactionServiceImpl implements TransactionService {
         List<TransactionHistory> transactionHistories = transactionDAO.findAll();
 
         return transactionHistories.stream()
-                .map(t -> new TransactionHistoryResponseDTO(t.getId(), t.getDate(), t.getOperation(),
-                          t.getAccountNumber(), t.getRemainingBalance(), t.getClient().getId()))
+                .map(t -> new TransactionHistoryResponseDTO(t.getId(), t.getDate(), t.getAccountNumber(),
+                        t.getOperation(), t.getRemainingBalance(), t.getClient().getId()))
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +62,8 @@ public class TransactionServiceImpl implements TransactionService {
         TransactionHistory transactionHistory = TransactionHistory.builder()
                 .date(LocalDate.now())
                 .accountNumber(account.getAccountNumber())
-                .operation(operation.append(accountTransactionRequestDTO.getAmountToTopUpAndWithdraw()).toString())
+                .operation(operation.append(new DecimalFormat("#.##")
+                        .format(accountTransactionRequestDTO.getAmountToTopUpAndWithdraw())).toString())
                 .remainingBalance(account.getBalance())
                 .client(client)
                 .build();

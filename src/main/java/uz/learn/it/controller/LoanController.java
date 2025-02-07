@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
@@ -20,7 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/loans")
+@RequestMapping("/LoanManagement/api/loans")
 public class LoanController {
     private final LoanService loanService;
 
@@ -29,7 +28,7 @@ public class LoanController {
         this.loanService = loanService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<APIResponseDTO<List<LoanResponseDTO>>> getLoans() {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<LoanResponseDTO>>builder()
@@ -38,8 +37,7 @@ public class LoanController {
         );
     }
 
-    @GetMapping(value = "/{loanId:\\d+}/daily-loan-debt",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{loanId:\\d+}/daily-loan-debt")
     public ResponseEntity<APIResponseDTO<List<DailyLoanPaymentDebtResponseDTO>>> getDailyInterest(
             @PathVariable("loanId") long loanId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -52,7 +50,7 @@ public class LoanController {
         );
     }
 
-    @GetMapping(value = "/payments", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/payments")
     public ResponseEntity<APIResponseDTO<List<LoanPaymentHistoryResponseDTO>>> getPayments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -65,7 +63,7 @@ public class LoanController {
         );
     }
 
-    @GetMapping(value = "/payments/{loanId:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/payments/{loanId:\\d+}")
     public ResponseEntity<APIResponseDTO<List<LoanPaymentHistoryResponseDTO>>> getPaymentsByLoanId(
             @PathVariable("loanId") long loanId) {
         return new ResponseEntity<>(
@@ -75,7 +73,7 @@ public class LoanController {
         );
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<APIResponseDTO<String>> createLoan(
             @Valid @RequestBody LoanCreationRequestDTO loan) {
         loanService.createLoan(loan);
@@ -87,7 +85,7 @@ public class LoanController {
         );
     }
 
-    @PostMapping(value = "/{loanId:\\d+}/payments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{loanId:\\d+}/payments")
     public ResponseEntity<APIResponseDTO<String>> doPaymentToLoan(
             @PathVariable("loanId") long loanId, @Valid @RequestBody LoanPaymentRequestDTO loan) {
         loanService.payForLoanDebt(loanId, loan);

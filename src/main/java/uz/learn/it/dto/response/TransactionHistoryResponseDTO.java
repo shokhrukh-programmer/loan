@@ -20,6 +20,7 @@ public class TransactionHistoryResponseDTO {
 
     private String accountNumber;
 
+    //@JsonSerialize(using = CustomDoubleSerializer.class)
     private String operation;
 
     @JsonSerialize(using = CustomDoubleSerializer.class)

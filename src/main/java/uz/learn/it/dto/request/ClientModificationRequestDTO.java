@@ -1,15 +1,11 @@
 package uz.learn.it.dto.request;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class ClientModificationRequestDTO {
-    @NotNull(message = "Client id can not be null")
-    private Long clientId;
-
     @Size(min = 3, max = 15, message = "First name should be between 3 and 15 character length!")
     private String firstName;
 

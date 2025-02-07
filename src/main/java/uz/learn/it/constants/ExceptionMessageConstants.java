@@ -20,4 +20,7 @@ public class ExceptionMessageConstants {
     public static final String INVALID_ACCOUNT_NUMBER = "You can not pay with this account number!";
 
     public static final String INTERNAL_SERVER_ERROR_MESSAGE = "Something went wrong!";
+
+    public static final String INVALID_PAYMENT_AMOUNT = "Invalid payment amount, " +
+            "you can not pay greater than loan total amount!";
 }
