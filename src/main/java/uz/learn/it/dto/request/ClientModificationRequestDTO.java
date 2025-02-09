@@ -3,6 +3,7 @@ package uz.learn.it.dto.request;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import uz.learn.it.enums.Role;
 
 @Data
 public class ClientModificationRequestDTO {
@@ -19,5 +20,5 @@ public class ClientModificationRequestDTO {
     private String phoneNumber;
 
     @Pattern(regexp = "^CLIENT|MANAGER$", message = "Role should be: MANAGER or CLIENT")
-    private String role;
+    private Role role;
 }

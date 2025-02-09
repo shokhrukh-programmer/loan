@@ -8,6 +8,7 @@ import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
+import uz.learn.it.enums.Role;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.repository.ClientDAO;
@@ -64,7 +65,7 @@ public class ClientServiceImpl implements ClientService {
             client.setPassportInfo(tempClient.getPassportInfo());
         }
 
-        if (validateInput(tempClient.getRole())) {
+        if (validateInput(tempClient.getRole().name())) {
             client.setRole(tempClient.getRole());
         }
 

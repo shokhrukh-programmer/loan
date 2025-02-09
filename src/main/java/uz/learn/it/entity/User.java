@@ -31,9 +31,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
-    private Client client;
+//    @OneToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "client_id", referencedColumnName = "id")
+//    private Client client;
 
 
     @Override

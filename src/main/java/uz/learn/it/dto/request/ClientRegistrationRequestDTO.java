@@ -2,6 +2,7 @@ package uz.learn.it.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import uz.learn.it.enums.Role;
 
 
 @Data
@@ -28,5 +29,5 @@ public class ClientRegistrationRequestDTO {
 
     @NotNull(message = "Role can not be null!")
     @Pattern(regexp = "^CLIENT|MANAGER$", message = "Role should be: MANAGER or CLIENT")
-    private String role;
+    private Role role;
 }

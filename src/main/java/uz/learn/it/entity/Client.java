@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.learn.it.enums.Role;
 
 @Entity
 @Table(name = "clients")
@@ -25,5 +26,5 @@ public class Client {
 
     private String phoneNumber;
 
-    private String role;
+    private Role role;
 }
