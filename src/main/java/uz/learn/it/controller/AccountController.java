@@ -1,9 +1,11 @@
 package uz.learn.it.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
 import uz.learn.it.dto.request.AccountCreationRequestDTO;
@@ -15,7 +17,7 @@ import uz.learn.it.service.AccountService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/LoanManagement/api/accounts")
+@RequestMapping("/api/accounts")
 public class AccountController {
     private final AccountService accountService;
 
@@ -24,6 +26,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @GetMapping
     public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccounts() {
         return new ResponseEntity<>(
@@ -32,15 +35,17 @@ public class AccountController {
         );
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @GetMapping(value = "/{clientId:\\d+}")
     public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccountByClientId(
-            @PathVariable("clientId") long clientId) {
+            @PathVariable("clientId") long clientId, HttpServletRequest request) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<AccountResponseDTO>>builder()
-                        .data(accountService.getAccountsByClientId(clientId)).build(), HttpStatus.OK
+                        .data(accountService.getAccountsByClientId(clientId, request)).build(), HttpStatus.OK
         );
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<APIResponseDTO<AccountCreationResponseDTO>> createAccount(
             @Valid @RequestBody AccountCreationRequestDTO accountCreationRequestDTO) {

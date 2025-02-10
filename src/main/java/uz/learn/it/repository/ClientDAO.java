@@ -9,4 +9,8 @@ import java.util.Optional;
 @Repository
 public interface ClientDAO extends JpaRepository<Client, Long> {
     Optional<Client> getClientById(long clientId);
+
+    boolean existsClientByPassportInfo(String passportInfo);
+
+    boolean existsClientByPhoneNumber(String phoneNumber);
 }

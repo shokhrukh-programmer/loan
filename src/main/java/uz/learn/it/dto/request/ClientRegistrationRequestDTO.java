@@ -28,6 +28,5 @@ public class ClientRegistrationRequestDTO {
     private String phoneNumber;
 
     @NotNull(message = "Role can not be null!")
-    @Pattern(regexp = "^CLIENT|MANAGER$", message = "Role should be: MANAGER or CLIENT")
     private Role role;
 }

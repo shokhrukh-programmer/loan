@@ -1,5 +1,6 @@
 package uz.learn.it.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +11,7 @@ import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
 import uz.learn.it.enums.AccountType;
 import uz.learn.it.exception.AlreadyExistException;
+import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.helper.AccountNumberGenerator;
 import uz.learn.it.repository.AccountDAO;
@@ -25,10 +27,13 @@ public class AccountServiceImpl implements AccountService {
 
     private final ClientDAO clientDAO;
 
+    private final JwtService jwtService;
+
     @Autowired
-    public AccountServiceImpl(AccountDAO accountDAO, ClientDAO clientDAO) {
+    public AccountServiceImpl(AccountDAO accountDAO, ClientDAO clientDAO, JwtService jwtService) {
         this.accountDAO = accountDAO;
         this.clientDAO = clientDAO;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -56,8 +61,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponseDTO> getAccountsByClientId(long clientId) {
+    public List<AccountResponseDTO> getAccountsByClientId(long clientId, HttpServletRequest request) {
+        String token = jwtService.getTokenFromRequest(request);
+        long id = jwtService.extractClientId(token);
+
+        if(id != clientId && !jwtService.extractRoles(token).equals("MANAGER")) {
+            throw new AccountNotFoundException("You can see only your accounts!");
+        }
+
         List<Account> accounts = accountDAO.findByClientId(clientId);
+
+        return accounts.stream()
+                .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),
+                        a.getAccountNumber(), a.getBalance(), a.getClient().getId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AccountResponseDTO> getAccountsByClientId(long id) {
+        List<Account> accounts = accountDAO.findByClientId(id);
 
         return accounts.stream()
                 .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),

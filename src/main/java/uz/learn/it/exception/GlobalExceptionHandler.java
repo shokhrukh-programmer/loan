@@ -61,16 +61,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<APIResponseDTO<String>> handleConstraintException(Exception ex) {
-        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ExceptionMessageConstants.INTERNAL_SERVER_ERROR_MESSAGE, null);
-
-        log.error(ex.getMessage());
-
-        return new ResponseEntity<>(apiResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<APIResponseDTO<String>> handleValidationException(MethodArgumentNotValidException ex) {
         List<String> errors = new ArrayList<>();

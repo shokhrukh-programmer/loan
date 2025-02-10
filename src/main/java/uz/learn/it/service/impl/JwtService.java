@@ -5,9 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import uz.learn.it.entity.Client;
 
 import java.security.Key;
 import java.util.Date;
@@ -32,16 +34,26 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, Client client) {
+        return generateToken(new HashMap<>(), userDetails, client);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Client client) {
+        extraClaims.put("role", userDetails.getAuthorities());
+        extraClaims.put("clientId", client.getId());
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
     public long getExpirationTime() {
         return jwtExpiration;
+    }
+
+    public Long extractClientId(String token) {
+        return Long.valueOf(extractAllClaims(token).get("clientId").toString());
+    }
+
+    public String extractRoles(String token) {
+        return extractAllClaims(token).get("role").toString();
     }
 
     private String buildToken(
@@ -57,6 +69,14 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String getTokenFromRequest(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

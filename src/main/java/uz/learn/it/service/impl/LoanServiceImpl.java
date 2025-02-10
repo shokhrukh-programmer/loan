@@ -1,6 +1,8 @@
 package uz.learn.it.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
@@ -20,7 +22,9 @@ import uz.learn.it.exception.notfound.LoanNotFoundException;
 import uz.learn.it.repository.*;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
+import uz.learn.it.specification.LoanDebtSpecification;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,10 +43,13 @@ public class LoanServiceImpl implements LoanService {
 
     private final LoanPaymentHistoryDAO loanPaymentHistoryDAO;
 
+    private final JwtService jwtService;
+
     @Autowired
     public LoanServiceImpl(TransactionService transactionService, LoanDAO loanDAO,
                            AccountDAO accountDAO, DailyLoanDebtDAO dailyLoanDebtDAO,
-                           ClientDAO clientDAO, LoanPaymentHistoryDAO loanPaymentHistoryDAO) {
+                           ClientDAO clientDAO, LoanPaymentHistoryDAO loanPaymentHistoryDAO,
+                           JwtService jwtService) {
         this.transactionService = transactionService;
 
         this.loanDAO = loanDAO;
@@ -54,6 +61,8 @@ public class LoanServiceImpl implements LoanService {
         this.clientDAO = clientDAO;
 
         this.loanPaymentHistoryDAO = loanPaymentHistoryDAO;
+
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -109,7 +118,18 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(long loanId, int page, int size,
-                                                                      LocalDate fromDate, LocalDate toDate) {
+                                             LocalDate fromDate, LocalDate toDate, HttpServletRequest request) throws AccessDeniedException {
+        String token = jwtService.getTokenFromRequest(request);
+
+        long id = jwtService.extractClientId(token);
+
+        Specification<DailyLoanPaymentDebt> spec = LoanDebtSpecification.byClientId(id);
+
+        if(loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
+                !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+            throw new AccessDeniedException("You don't have correct rights to access this resource!");
+        }
+
         List<DailyLoanPaymentDebt> debts = dailyLoanDebtDAO.getByLoanId(loanId);
 
         return debts.stream()
@@ -157,7 +177,15 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByLoanId(long loanId) {
+    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByLoanId(long loanId, HttpServletRequest request) throws AccessDeniedException {
+        String token = jwtService.getTokenFromRequest(request);
+        long id = jwtService.extractClientId(token);
+
+        if(loanDAO.getLoanById(id).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
+                        !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+            throw new AccessDeniedException("You dont have access rights!");
+        }
+
         List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.getByLoanId(loanId);
 
         return paymentHistories.stream()

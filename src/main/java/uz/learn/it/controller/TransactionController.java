@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.learn.it.constants.SuccessfulMessageConstants;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/LoanManagement/api/transactions")
+@RequestMapping("/api/transactions")
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -25,6 +26,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @GetMapping(value = "/histories")
     public ResponseEntity<APIResponseDTO<List<TransactionHistoryResponseDTO>>> getOperationHistory(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
@@ -37,6 +39,7 @@ public class TransactionController {
         );
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @PostMapping(value = "/{accountId:\\d+}")
     public ResponseEntity<APIResponseDTO<String>> doTransaction(
             @PathVariable("accountId") long id,

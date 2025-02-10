@@ -1,6 +1,6 @@
 package uz.learn.it.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Data

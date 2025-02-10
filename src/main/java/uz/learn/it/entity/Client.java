@@ -15,7 +15,8 @@ import uz.learn.it.enums.Role;
 @Builder
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "client_seq", sequenceName = "clients_id_seq", allocationSize = 1, initialValue = 2)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
     private long id;
 
     private String firstName;
@@ -26,5 +27,6 @@ public class Client {
 
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 }

@@ -6,9 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
 import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
-import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
-import uz.learn.it.enums.Role;
 import uz.learn.it.exception.AlreadyExistException;
 import uz.learn.it.exception.NotFoundException;
 import uz.learn.it.repository.ClientDAO;
@@ -28,24 +26,6 @@ public class ClientServiceImpl implements ClientService {
         this.clientDAO = clientDAO;
 
         this.userService = userService;
-    }
-
-    @Override
-    @Transactional
-    public ClientRegistrationResponseDTO registerClient(ClientRegistrationRequestDTO tempClient) {
-        checkForClientExistence(tempClient);
-
-        Client client = Client.builder()
-                .firstName(tempClient.getFirstName())
-                .lastName(tempClient.getLastName())
-                .passportInfo(tempClient.getPassportInfo())
-                .phoneNumber(tempClient.getPhoneNumber())
-                .role(tempClient.getRole())
-                .build();
-
-        clientDAO.save(client);
-
-        return userService.saveUsernameAndPassword(client.getPhoneNumber(), client.getId());
     }
 
     @Override

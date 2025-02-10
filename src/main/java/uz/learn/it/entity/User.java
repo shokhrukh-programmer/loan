@@ -15,13 +15,14 @@ import java.util.Collections;
 
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "user_credentials")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "client_seq", sequenceName = "clients_id_seq", allocationSize = 1, initialValue = 2)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
     private long id;
 
     private String username;
@@ -31,9 +32,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-//    @OneToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "client_id", referencedColumnName = "id")
-//    private Client client;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    private Client client;
 
 
     @Override
