@@ -1,31 +1,36 @@
 package uz.learn.it.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.learn.it.constants.ExceptionMessageConstants;
 import uz.learn.it.dto.request.ClientModificationRequestDTO;
-import uz.learn.it.dto.request.ClientRegistrationRequestDTO;
+import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
-import uz.learn.it.exception.AlreadyExistException;
+import uz.learn.it.entity.User;
 import uz.learn.it.exception.NotFoundException;
+import uz.learn.it.exception.notfound.ClientNotFoundException;
+import uz.learn.it.helper.PasswordGenerator;
 import uz.learn.it.repository.ClientDAO;
+import uz.learn.it.repository.UserDAO;
 import uz.learn.it.service.ClientService;
-import uz.learn.it.service.UserService;
+import uz.learn.it.specification.ClientSpecification;
 
 import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
     private final ClientDAO clientDAO;
-
-    private final UserService userService;
+    private final UserDAO userDAO;
 
     @Autowired
-    public ClientServiceImpl(ClientDAO clientDAO, UserService userService) {
+    public ClientServiceImpl(ClientDAO clientDAO, UserDAO userDAO) {
         this.clientDAO = clientDAO;
 
-        this.userService = userService;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -61,21 +66,23 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<Client> getClients() {
-        return clientDAO.findAll();
+    public List<Client> getClients(int page, int size) {
+        Specification<Client> specification = Specification.where(ClientSpecification.clients());
+        Page<Client> clientPage = clientDAO.findAll(specification, PageRequest.of(page, size));
+
+        return clientPage.getContent();
     }
 
-    private void checkForClientExistence(ClientRegistrationRequestDTO clientRegistrationRequestDTO) {
-        boolean clientExists = clientDAO.findAll().stream()
-                .anyMatch(client -> hasMatchingDetails(client, clientRegistrationRequestDTO));
+    @Override
+    public ClientRegistrationResponseDTO resetPassword(long clientId) {
+        User user = userDAO.getUserByClientId(clientId).orElseThrow(ClientNotFoundException::new);
 
-        if (clientExists) {
-            throw new AlreadyExistException(ExceptionMessageConstants.CLIENT_ALREADY_EXIST_MESSAGE);
-        }
-    }
+        String newPassword = PasswordGenerator.generatePassword();
 
-    private boolean hasMatchingDetails(Client client, ClientRegistrationRequestDTO dto) {
-        return client.getPassportInfo().equals(dto.getPassportInfo()) ||
-                client.getPhoneNumber().equals(dto.getPhoneNumber());
+        user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+
+        userDAO.save(user);
+
+        return new ClientRegistrationResponseDTO(user.getUsername(), newPassword);
     }
 }

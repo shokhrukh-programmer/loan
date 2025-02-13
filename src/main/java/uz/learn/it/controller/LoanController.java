@@ -33,10 +33,26 @@ public class LoanController {
 
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @GetMapping
-    public ResponseEntity<APIResponseDTO<List<LoanResponseDTO>>> getLoans() {
+    public ResponseEntity<APIResponseDTO<List<LoanResponseDTO>>> getLoans(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<LoanResponseDTO>>builder()
-                        .data(loanService.getLoans())
+                        .data(loanService.getLoans(page, size))
+                        .build(), HttpStatus.OK
+        );
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
+    @GetMapping(value = "{clientId:\\d+}")
+    public ResponseEntity<APIResponseDTO<List<LoanResponseDTO>>> getLoansByClientId(@PathVariable("clientId") long clientId,
+                                                                   HttpServletRequest request,
+                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size) {
+        return new ResponseEntity<>(
+                APIResponseDTO.<List<LoanResponseDTO>>builder()
+                        .data(loanService.getLoansByClientId(clientId, request, page, size))
                         .build(), HttpStatus.OK
         );
     }
@@ -71,12 +87,14 @@ public class LoanController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
-    @GetMapping(value = "/payments/{loanId:\\d+}")
-    public ResponseEntity<APIResponseDTO<List<LoanPaymentHistoryResponseDTO>>> getPaymentsByLoanId(
-            @PathVariable("loanId") long loanId, HttpServletRequest request) throws AccessDeniedException {
+    @GetMapping(value = "/payments/{clientId:\\d+}")
+    public ResponseEntity<APIResponseDTO<List<LoanPaymentHistoryResponseDTO>>> getPaymentsByClientId(
+            @PathVariable("clientId") long clientId, HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) throws AccessDeniedException {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<LoanPaymentHistoryResponseDTO>>builder()
-                        .data(loanService.getLoanPaymentHistoryByLoanId(loanId, request))
+                        .data(loanService.getLoanPaymentHistoryByClientId(clientId, request, page, size))
                         .build(), HttpStatus.OK
         );
     }

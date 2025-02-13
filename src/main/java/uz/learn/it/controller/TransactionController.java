@@ -1,5 +1,6 @@
 package uz.learn.it.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,6 +36,20 @@ public class TransactionController {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<TransactionHistoryResponseDTO>>builder()
                         .data(transactionService.getOperationHistory(page, size, from, to))
+                        .build(), HttpStatus.OK
+        );
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
+    @GetMapping(value = "/histories/{clientId:\\d+}")
+    public ResponseEntity<APIResponseDTO<List<TransactionHistoryResponseDTO>>> getOperationHistoryByClientId(
+            @PathVariable("clientId") long clientId, HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return new ResponseEntity<>(
+                APIResponseDTO.<List<TransactionHistoryResponseDTO>>builder()
+                        .data(transactionService.getOperationHistoryByClientId(clientId, request, page, size, from, to))
                         .build(), HttpStatus.OK
         );
     }

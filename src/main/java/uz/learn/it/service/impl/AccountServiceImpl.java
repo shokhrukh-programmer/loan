@@ -2,6 +2,10 @@ package uz.learn.it.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
@@ -11,12 +15,12 @@ import uz.learn.it.entity.Account;
 import uz.learn.it.entity.Client;
 import uz.learn.it.enums.AccountType;
 import uz.learn.it.exception.AlreadyExistException;
-import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
 import uz.learn.it.helper.AccountNumberGenerator;
 import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.service.AccountService;
+import uz.learn.it.specification.AccountSpecification;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,8 +69,8 @@ public class AccountServiceImpl implements AccountService {
         String token = jwtService.getTokenFromRequest(request);
         long id = jwtService.extractClientId(token);
 
-        if(id != clientId && !jwtService.extractRoles(token).equals("MANAGER")) {
-            throw new AccountNotFoundException("You can see only your accounts!");
+        if (id != clientId && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+            throw new AccessDeniedException("You can see only your accounts!");
         }
 
         List<Account> accounts = accountDAO.findByClientId(clientId);
@@ -88,10 +92,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponseDTO> getAccounts() {
-        List<Account> accounts = accountDAO.findAll();
+    public List<AccountResponseDTO> getAccounts(int page, int size) {
+        Specification<Account> spec = Specification.where(AccountSpecification.getAccounts());
+        Page<Account> accountPage = accountDAO.findAll(spec, PageRequest.of(page, size));
 
-        return accounts.stream()
+        return accountPage.getContent().stream()
                 .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),
                         a.getAccountNumber(), a.getBalance(), a.getClient().getId()))
                 .collect(Collectors.toList());

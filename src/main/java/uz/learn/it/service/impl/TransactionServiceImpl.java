@@ -1,6 +1,11 @@
 package uz.learn.it.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
@@ -17,6 +22,7 @@ import uz.learn.it.repository.AccountDAO;
 import uz.learn.it.repository.ClientDAO;
 import uz.learn.it.repository.TransactionDAO;
 import uz.learn.it.service.TransactionService;
+import uz.learn.it.specification.TransactionSpecification;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -30,21 +36,24 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountDAO accountDAO;
 
     private final ClientDAO clientDAO;
+    private final JwtService jwtService;
 
     @Autowired
-    public TransactionServiceImpl(TransactionDAO transactionDAO, AccountDAO accountDAO, ClientDAO clientDAO) {
+    public TransactionServiceImpl(TransactionDAO transactionDAO, AccountDAO accountDAO, ClientDAO clientDAO, JwtService jwtService) {
         this.transactionDAO = transactionDAO;
 
         this.accountDAO = accountDAO;
 
         this.clientDAO = clientDAO;
+        this.jwtService = jwtService;
     }
 
     @Override
     public List<TransactionHistoryResponseDTO> getOperationHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
-        List<TransactionHistory> transactionHistories = transactionDAO.findAll();
+        Specification<TransactionHistory> spec = Specification.where(TransactionSpecification.byDateRange(fromDate, toDate));
+        Page<TransactionHistory> transactionHistoryPage = transactionDAO.findAll(spec, PageRequest.of(page, size));
 
-        return transactionHistories.stream()
+        return transactionHistoryPage.getContent().stream()
                 .map(t -> new TransactionHistoryResponseDTO(t.getId(), t.getDate(), t.getAccountNumber(),
                         t.getOperation(), t.getRemainingBalance(), t.getClient().getId()))
                 .collect(Collectors.toList());
@@ -77,6 +86,26 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(AccountNotFoundException::new);
     }
 
+    @Override
+    public List<TransactionHistoryResponseDTO> getOperationHistoryByClientId(long clientId, HttpServletRequest request, int page, int size, LocalDate from, LocalDate to) {
+        String token = jwtService.getTokenFromRequest(request);
+        long id = jwtService.extractClientId(token);
+
+        if (clientId != id && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+            throw new AccessDeniedException("You dont have permission to access path!");
+        }
+
+        Specification<TransactionHistory> spec =
+                Specification.where(TransactionSpecification.getTransactionHistoriesByClientId(clientId))
+                        .and(TransactionSpecification.byDateRange(from, to));
+        Page<TransactionHistory> transactionHistoryPage = transactionDAO.findAll(spec, PageRequest.of(page, size));
+
+        return transactionHistoryPage.getContent().stream()
+                .map(t -> new TransactionHistoryResponseDTO(t.getId(), t.getDate(), t.getAccountNumber(),
+                        t.getOperation(), t.getRemainingBalance(), t.getClient().getId()))
+                .collect(Collectors.toList());
+    }
+
     private StringBuilder getOperationByType(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
         StringBuilder operation = new StringBuilder();
 
@@ -93,7 +122,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         return operation;
     }
-
 
     private void checkBalanceToWithdraw(AccountTransactionRequestDTO accountTransactionRequestDTO, Account account) {
         if (account.getBalance() - accountTransactionRequestDTO.getAmountToTopUpAndWithdraw() < 0) {

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface LoanService {
-    List<LoanResponseDTO> getLoans();
+    List<LoanResponseDTO> getLoans(int page, int size);
 
     void createLoan(LoanCreationRequestDTO loan);
 
@@ -25,5 +25,7 @@ public interface LoanService {
 
     List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate);
 
-    List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByLoanId(long loanId, HttpServletRequest request) throws AccessDeniedException;
+    List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByClientId(long clientId, HttpServletRequest request, int page, int size) throws AccessDeniedException;
+
+    List<LoanResponseDTO> getLoansByClientId(long clientId, HttpServletRequest request, int page, int size);
 }

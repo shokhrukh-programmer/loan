@@ -21,4 +21,6 @@ public class ExceptionMessageConstants {
 
     public static final String INVALID_PAYMENT_AMOUNT = "Invalid payment amount, " +
             "you can not pay greater than loan total amount!";
+
+    public static final String ACCESS_DENIED_MESSAGE = "You dont have correct access right!";
 }

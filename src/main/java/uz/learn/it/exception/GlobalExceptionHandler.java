@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.ott.InvalidOneTimeTokenException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,6 +33,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidOneTimeTokenException.class)
+    public ResponseEntity<APIResponseDTO<String>> handleExpiredTokenException(InvalidOneTimeTokenException ex) {
+        APIResponseDTO<String> apiResponseDto = new APIResponseDTO<>(HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(), null);
+
+        log.error(ex.getMessage());
+
+        return new ResponseEntity<>(apiResponseDto, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<APIResponseDTO<String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.BAD_REQUEST.value(),
@@ -39,6 +51,16 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
 
         return new ResponseEntity<>(apiResponseDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<APIResponseDTO<String>> handleAccessDeniedException(AccessDeniedException ex) {
+        APIResponseDTO<String> apiResponseDTO = new APIResponseDTO<>(HttpStatus.FORBIDDEN.value(),
+                ExceptionMessageConstants.ACCESS_DENIED_MESSAGE, null);
+
+        log.error(ex.getMessage());
+
+        return new ResponseEntity<>(apiResponseDTO, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

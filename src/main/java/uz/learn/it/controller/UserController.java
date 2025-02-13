@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uz.learn.it.dto.response.APIResponseDTO;
 import uz.learn.it.dto.response.UserCredentialResponseDTO;
@@ -27,10 +28,13 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @GetMapping
-    public ResponseEntity<APIResponseDTO<List<UserCredentialResponseDTO>>> getUserDetails() {
+    public ResponseEntity<APIResponseDTO<List<UserCredentialResponseDTO>>> getUserDetails(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<UserCredentialResponseDTO>>builder()
-                        .data(userService.getUserCredentials())
+                        .data(userService.getUserCredentials(page, size))
                         .build(), HttpStatus.OK
         );
     }

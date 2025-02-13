@@ -53,7 +53,7 @@ public class AuthenticationService {
 
         String password = PasswordGenerator.generatePassword();
 
-        var user = userDAO.save(User.builder()
+        userDAO.save(User.builder()
                 .username(request.getPhoneNumber())
                 .password(passwordEncoder.encode(password))
                 .role(request.getRole())
@@ -63,7 +63,6 @@ public class AuthenticationService {
         return ClientRegistrationResponseDTO.builder()
                 .username(client.getPhoneNumber())
                 .password(password)
-                .token(jwtService.generateToken(user, client))
                 .build();
     }
 

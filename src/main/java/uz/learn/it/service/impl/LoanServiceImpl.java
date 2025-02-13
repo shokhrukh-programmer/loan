@@ -2,7 +2,10 @@ package uz.learn.it.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.learn.it.constants.ExceptionMessageConstants;
@@ -15,6 +18,7 @@ import uz.learn.it.dto.response.LoanResponseDTO;
 import uz.learn.it.entity.*;
 import uz.learn.it.enums.PaymentTypeForLoan;
 import uz.learn.it.enums.PaymentTypeForTransaction;
+import uz.learn.it.enums.Role;
 import uz.learn.it.exception.ValidationException;
 import uz.learn.it.exception.notfound.AccountNotFoundException;
 import uz.learn.it.exception.notfound.ClientNotFoundException;
@@ -22,9 +26,8 @@ import uz.learn.it.exception.notfound.LoanNotFoundException;
 import uz.learn.it.repository.*;
 import uz.learn.it.service.LoanService;
 import uz.learn.it.service.TransactionService;
-import uz.learn.it.specification.LoanDebtSpecification;
+import uz.learn.it.specification.LoanSpecification;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,10 +86,15 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanResponseDTO> getLoans() {
-        List<Loan> loans = loanDAO.findAll();
+    public List<LoanResponseDTO> getLoans(int page, int size) {
+        Specification<Loan> spec = Specification.where(LoanSpecification.getLoans());
+        return getLoanPage(page, size, spec);
+    }
 
-        return loans.stream()
+    private List<LoanResponseDTO> getLoanPage(int page, int size, Specification<Loan> spec) {
+        Page<Loan> loanPage = loanDAO.findAll(spec, PageRequest.of(page, size));
+
+        return loanPage.getContent().stream()
                 .map(l -> new LoanResponseDTO(l.getId(), l.getCreatedDate(), l.getAmount(), l.getTerm(),
                         l.getInterestRate(), l.getBalance(), l.getDebt(), l.getClient().getId()))
                 .collect(Collectors.toList());
@@ -118,21 +126,20 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(long loanId, int page, int size,
-                                             LocalDate fromDate, LocalDate toDate, HttpServletRequest request) throws AccessDeniedException {
+                                                                      LocalDate fromDate, LocalDate toDate, HttpServletRequest request) {
         String token = jwtService.getTokenFromRequest(request);
 
         long id = jwtService.extractClientId(token);
 
-        Specification<DailyLoanPaymentDebt> spec = LoanDebtSpecification.byClientId(id);
-
-        if(loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
-                !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+        if (loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
+                !(jwtService.extractRoles(token).equals(Role.ROLE_MANAGER.toString()))) {
             throw new AccessDeniedException("You don't have correct rights to access this resource!");
         }
 
-        List<DailyLoanPaymentDebt> debts = dailyLoanDebtDAO.getByLoanId(loanId);
+        Specification<DailyLoanPaymentDebt> spec = Specification.where(LoanSpecification.getDailyLoanPaymentsById(loanId));
+        Page<DailyLoanPaymentDebt> loanPage = dailyLoanDebtDAO.findAll(spec, PageRequest.of(page, size));
 
-        return debts.stream()
+        return loanPage.getContent().stream()
                 .map(d -> new DailyLoanPaymentDebtResponseDTO(d.getId(), d.getDate(),
                         d.getDailyInterestAmount(), d.getLoan().getId()))
                 .collect(Collectors.toList());
@@ -157,7 +164,7 @@ public class LoanServiceImpl implements LoanService {
             throw new ValidationException(ExceptionMessageConstants.BALANCE_NOT_VALID_MESSAGE);
         }
 
-        if(loanDetails.getPaymentAmount() > loan.getBalance() + loan.getDebt()) {
+        if (loanDetails.getPaymentAmount() > loan.getBalance() + loan.getDebt()) {
             throw new ValidationException(ExceptionMessageConstants.INVALID_PAYMENT_AMOUNT);
         }
 
@@ -168,30 +175,46 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate) {
-        List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.findAll();
+        Specification<LoanPaymentHistory> spec = Specification.where(LoanSpecification.getLoanPaymentHistory());
+        Page<LoanPaymentHistory> loanPage = loanPaymentHistoryDAO.findAll(spec, PageRequest.of(page, size));
 
-        return paymentHistories.stream()
+        return loanPage.getContent().stream()
                 .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getType(), p.getAmount(),
                         p.getDate(), p.getLoan().getId()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByLoanId(long loanId, HttpServletRequest request) throws AccessDeniedException {
+    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByClientId(long clientId, HttpServletRequest request,
+                                                                               int page, int size) throws AccessDeniedException {
         String token = jwtService.getTokenFromRequest(request);
         long id = jwtService.extractClientId(token);
 
-        if(loanDAO.getLoanById(id).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
-                        !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+        if (id != clientId &&
+                !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
             throw new AccessDeniedException("You dont have access rights!");
         }
 
-        List<LoanPaymentHistory> paymentHistories = loanPaymentHistoryDAO.getByLoanId(loanId);
+        Specification<LoanPaymentHistory> spec = Specification.where(LoanSpecification.getLoanPaymentHistoryByClientId(clientId));
+        Page<LoanPaymentHistory> loanPage = loanPaymentHistoryDAO.findAll(spec, PageRequest.of(page, size));
 
-        return paymentHistories.stream()
+        return loanPage.getContent().stream()
                 .map(p -> new LoanPaymentHistoryResponseDTO(p.getId(), p.getType(), p.getAmount(),
                         p.getDate(), p.getLoan().getId()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LoanResponseDTO> getLoansByClientId(long id, HttpServletRequest request, int page, int size) {
+        String token = jwtService.getTokenFromRequest(request);
+        long clientId = jwtService.extractClientId(token);
+
+        if (clientId != id && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+            throw new AccessDeniedException("You dont have access rights!");
+        }
+
+        Specification<Loan> spec = Specification.where(LoanSpecification.getLoansByClientId(id));
+        return getLoanPage(page, size, spec);
     }
 
     private void payForLoan(LoanPaymentRequestDTO loanDetails, Loan loan) {
@@ -240,11 +263,11 @@ public class LoanServiceImpl implements LoanService {
 
         loanDAO.save(loan);
 
-        if(loanPaymentHistoryInterest != null) {
+        if (loanPaymentHistoryInterest != null) {
             loanPaymentHistoryDAO.save(loanPaymentHistoryInterest);
         }
 
-        if(loanPaymentHistoryMain != null) {
+        if (loanPaymentHistoryMain != null) {
             loanPaymentHistoryDAO.save(loanPaymentHistoryMain);
         }
     }

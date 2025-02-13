@@ -1,5 +1,6 @@
 package uz.learn.it.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import uz.learn.it.dto.request.AccountTransactionRequestDTO;
 import uz.learn.it.dto.response.TransactionHistoryResponseDTO;
 import uz.learn.it.entity.Account;
@@ -14,4 +15,5 @@ public interface TransactionService {
 
     Account getAccountByAccountId(long accountId);
 
+    List<TransactionHistoryResponseDTO> getOperationHistoryByClientId(long clientId, HttpServletRequest request, int page, int size, LocalDate from, LocalDate to);
 }

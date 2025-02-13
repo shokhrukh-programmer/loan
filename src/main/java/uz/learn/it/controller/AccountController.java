@@ -28,10 +28,13 @@ public class AccountController {
 
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @GetMapping
-    public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccounts() {
+    public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccounts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<AccountResponseDTO>>builder()
-                        .data(accountService.getAccounts()).build(), HttpStatus.OK
+                        .data(accountService.getAccounts(page, size)).build(), HttpStatus.OK
         );
     }
 
