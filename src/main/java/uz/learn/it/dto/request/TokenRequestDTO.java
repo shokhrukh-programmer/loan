@@ -6,15 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uz.learn.it.enums.Role;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TokenRequestDTO {
+public class TokenRequestDTO implements Serializable {
     private String token;
     private Role role;
     private LocalDate date;
-    private String clientId;
+    private long clientId;
 }
