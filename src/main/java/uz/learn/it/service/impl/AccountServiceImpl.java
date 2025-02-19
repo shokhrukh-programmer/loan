@@ -65,15 +65,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponseDTO> getAccountsByClientId(long clientId, HttpServletRequest request) {
+    public List<AccountResponseDTO> getAccountsByClientId(HttpServletRequest request) {
         String token = jwtService.getTokenFromRequest(request);
         long id = jwtService.extractClientId(token);
 
-        if (id != clientId && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
-            throw new AccessDeniedException("You can see only your accounts!");
-        }
-
-        List<Account> accounts = accountDAO.findByClientId(clientId);
+        List<Account> accounts = accountDAO.findByClientId(id);
 
         return accounts.stream()
                 .map(a -> new AccountResponseDTO(a.getId(), a.getAccountType(),

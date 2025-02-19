@@ -15,6 +15,11 @@ public class LoanSpecification {
                 criteriaBuilder.equal(root.get("loan").get("id"), loanId);
     }
 
+    public static Specification<DailyLoanPaymentDebt> getDailyLoanPaymentsByClientId(long clientId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("loan").get("client").get("id"), clientId);
+    }
+
     public static Specification<LoanPaymentHistory> getLoanPaymentHistory() {
         return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
     }

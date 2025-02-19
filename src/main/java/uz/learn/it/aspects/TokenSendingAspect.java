@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 import uz.learn.it.dto.request.TokenRequestDTO;
 import uz.learn.it.enums.Role;
@@ -32,7 +35,7 @@ public class TokenSendingAspect {
     public void sendMessage(String token) throws JsonProcessingException {
         long clientId = jwtService.extractClientId(token);
         Role role = Enum.valueOf(Role.class, jwtService.extractRoles(token));
-
+        MessageConverter messageConverter = new MappingJackson2MessageConverter();
         TokenRequestDTO tokenRequestDTO = TokenRequestDTO.builder()
                 .token(token)
                 .role(role)

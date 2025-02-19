@@ -87,16 +87,16 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionHistoryResponseDTO> getOperationHistoryByClientId(long clientId, HttpServletRequest request, int page, int size, LocalDate from, LocalDate to) {
+    public List<TransactionHistoryResponseDTO> getOperationHistoryByClientId(HttpServletRequest request, int page, int size, LocalDate from, LocalDate to) {
         String token = jwtService.getTokenFromRequest(request);
         long id = jwtService.extractClientId(token);
-
-        if (clientId != id && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
-            throw new AccessDeniedException("You dont have permission to access path!");
-        }
+//
+//        if (clientId != id && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+//            throw new AccessDeniedException("You dont have permission to access path!");
+//        }
 
         Specification<TransactionHistory> spec =
-                Specification.where(TransactionSpecification.getTransactionHistoriesByClientId(clientId))
+                Specification.where(TransactionSpecification.getTransactionHistoriesByClientId(id))
                         .and(TransactionSpecification.byDateRange(from, to));
         Page<TransactionHistory> transactionHistoryPage = transactionDAO.findAll(spec, PageRequest.of(page, size));
 

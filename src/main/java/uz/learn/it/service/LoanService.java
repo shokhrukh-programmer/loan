@@ -18,14 +18,14 @@ public interface LoanService {
 
     void calculateInterest();
 
-    List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(long loanId, int page, int size,
+    List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(int page, int size,
                                                                LocalDate fromDate, LocalDate toDate, HttpServletRequest request) throws AccessDeniedException;
 
     void payForLoanDebt(long loanId, LoanPaymentRequestDTO loanDetails);
 
     List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistory(int page, int size, LocalDate fromDate, LocalDate toDate);
 
-    List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByClientId(long clientId, HttpServletRequest request, int page, int size) throws AccessDeniedException;
+    List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByClientId(HttpServletRequest request, int page, int size) throws AccessDeniedException;
 
-    List<LoanResponseDTO> getLoansByClientId(long clientId, HttpServletRequest request, int page, int size);
+    List<LoanResponseDTO> getLoansByClientId(HttpServletRequest request, int page, int size);
 }

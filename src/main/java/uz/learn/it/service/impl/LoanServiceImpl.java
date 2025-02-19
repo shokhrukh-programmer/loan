@@ -125,19 +125,22 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(long loanId, int page, int size,
+    public List<DailyLoanPaymentDebtResponseDTO> getDailyPaymentsById(int page, int size,
                                                                       LocalDate fromDate, LocalDate toDate, HttpServletRequest request) {
         String token = jwtService.getTokenFromRequest(request);
 
         long id = jwtService.extractClientId(token);
+//
+//        if (loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
+//                !(jwtService.extractRoles(token).equals(Role.ROLE_MANAGER.toString()))) {
+//            throw new AccessDeniedException("You don't have correct rights to access this resource!");
+//        }
 
-        if (loanDAO.getLoanById(loanId).orElseThrow(LoanNotFoundException::new).getClient().getId() != id &&
-                !(jwtService.extractRoles(token).equals(Role.ROLE_MANAGER.toString()))) {
-            throw new AccessDeniedException("You don't have correct rights to access this resource!");
-        }
-
-        Specification<DailyLoanPaymentDebt> spec = Specification.where(LoanSpecification.getDailyLoanPaymentsById(loanId));
+        Specification<DailyLoanPaymentDebt> spec = Specification.where(LoanSpecification.getDailyLoanPaymentsByClientId(id));
         Page<DailyLoanPaymentDebt> loanPage = dailyLoanDebtDAO.findAll(spec, PageRequest.of(page, size));
+//
+//        Specification<DailyLoanPaymentDebt> spec = Specification.where(LoanSpecification.getDailyLoanPaymentsById(loanId));
+//        Page<DailyLoanPaymentDebt> loanPage = dailyLoanDebtDAO.findAll(spec, PageRequest.of(page, size));
 
         return loanPage.getContent().stream()
                 .map(d -> new DailyLoanPaymentDebtResponseDTO(d.getId(), d.getDate(),
@@ -185,17 +188,17 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByClientId(long clientId, HttpServletRequest request,
+    public List<LoanPaymentHistoryResponseDTO> getLoanPaymentHistoryByClientId(HttpServletRequest request,
                                                                                int page, int size) throws AccessDeniedException {
         String token = jwtService.getTokenFromRequest(request);
         long id = jwtService.extractClientId(token);
+//
+//        if (id != clientId &&
+//                !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
+//            throw new AccessDeniedException("You dont have access rights!");
+//        }
 
-        if (id != clientId &&
-                !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
-            throw new AccessDeniedException("You dont have access rights!");
-        }
-
-        Specification<LoanPaymentHistory> spec = Specification.where(LoanSpecification.getLoanPaymentHistoryByClientId(clientId));
+        Specification<LoanPaymentHistory> spec = Specification.where(LoanSpecification.getLoanPaymentHistoryByClientId(id));
         Page<LoanPaymentHistory> loanPage = loanPaymentHistoryDAO.findAll(spec, PageRequest.of(page, size));
 
         return loanPage.getContent().stream()
@@ -205,15 +208,11 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanResponseDTO> getLoansByClientId(long id, HttpServletRequest request, int page, int size) {
+    public List<LoanResponseDTO> getLoansByClientId(HttpServletRequest request, int page, int size) {
         String token = jwtService.getTokenFromRequest(request);
         long clientId = jwtService.extractClientId(token);
 
-        if (clientId != id && !jwtService.extractRoles(token).equals("ROLE_MANAGER")) {
-            throw new AccessDeniedException("You dont have access rights!");
-        }
-
-        Specification<Loan> spec = Specification.where(LoanSpecification.getLoansByClientId(id));
+        Specification<Loan> spec = Specification.where(LoanSpecification.getLoansByClientId(clientId));
         return getLoanPage(page, size, spec);
     }
 

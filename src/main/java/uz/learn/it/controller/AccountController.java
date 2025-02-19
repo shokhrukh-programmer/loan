@@ -39,12 +39,11 @@ public class AccountController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
-    @GetMapping(value = "/{clientId:\\d+}")
-    public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccountByClientId(
-            @PathVariable("clientId") long clientId, HttpServletRequest request) {
+    @GetMapping(value = "/me")
+    public ResponseEntity<APIResponseDTO<List<AccountResponseDTO>>> getAccountByClientId(HttpServletRequest request) {
         return new ResponseEntity<>(
                 APIResponseDTO.<List<AccountResponseDTO>>builder()
-                        .data(accountService.getAccountsByClientId(clientId, request)).build(), HttpStatus.OK
+                        .data(accountService.getAccountsByClientId(request)).build(), HttpStatus.OK
         );
     }
 

@@ -15,5 +15,5 @@ public interface TransactionService {
 
     Account getAccountByAccountId(long accountId);
 
-    List<TransactionHistoryResponseDTO> getOperationHistoryByClientId(long clientId, HttpServletRequest request, int page, int size, LocalDate from, LocalDate to);
+    List<TransactionHistoryResponseDTO> getOperationHistoryByClientId(HttpServletRequest request, int page, int size, LocalDate from, LocalDate to);
 }
