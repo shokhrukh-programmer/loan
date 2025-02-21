@@ -1,0 +1,5 @@
+serviceTests\ClientServiceTest.class
+serviceTests\TransactionServiceTest.class
+serviceTests\UserServiceTest.class
+serviceTests\AccountServiceTest.class
+controllerTests\ClientControllerTest.class

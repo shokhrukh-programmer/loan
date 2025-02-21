@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------
+Test set: unit.UnitTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.013 s <<< FAILURE! -- in unit.UnitTest
+unit.UnitTest.should_throw_exception_when_adding_two_max_integer_values_higher_than_average -- Time elapsed: 0.006 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Not yet implemented
+	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:38)
+	at org.junit.jupiter.api.Assertions.fail(Assertions.java:138)
+	at unit.UnitTest.should_throw_exception_when_adding_two_max_integer_values_higher_than_average(UnitTest.java:49)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

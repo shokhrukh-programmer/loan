@@ -1,9 +1,15 @@
+package serviceTests;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import uz.learn.it.dto.response.ClientRegistrationResponseDTO;
 import uz.learn.it.entity.Client;
 import uz.learn.it.entity.User;
@@ -15,11 +21,13 @@ import uz.learn.it.service.impl.ClientServiceImpl;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientServiceTests {
+public class ClientServiceTest {
     @Mock
     private ClientDAO clientDAO;
 
@@ -44,29 +52,17 @@ public class ClientServiceTests {
 
     @Test
     void testAllClients() {
-        List<Client> clients = List.of(client);
+        Page<Client> clients = new PageImpl<>(List.of(client));
 
-        when(clientDAO.findAll()).thenReturn(clients);
+        when(clientDAO.findAll(any(Specification.class), any(Pageable.class))).thenReturn(clients);
 
         // When
-        List<Client> result = clientDAO.findAll();
+        List<Client> result = clientService.getClients(0, 10);
 
         // Then
         assertEquals(1, result.size());
 
         assertEquals("Shohruh", result.get(0).getFirstName());
-    }
-
-    @Test
-    void testUserByClientId() {
-        User user = new User(1, "+998908991199", "12345678", Role.ROLE_MANAGER, client);
-        when(userDAO.getUserByClientId(1L)).thenReturn(Optional.of(user));
-
-        Optional<User> result = userDAO.getUserByClientId(1L);
-
-        assertTrue(result.isPresent());
-
-        assertEquals("12345678", result.get().getPassword());
     }
 
     @Test
